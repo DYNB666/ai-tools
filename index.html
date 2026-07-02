@@ -8,455 +8,311 @@
 <title>AI指令大师 · 龙虾部署</title>
 <style>
 :root{
- --bg:#0a0e17;--card:rgba(14,20,35,.95);--border:rgba(255,255,255,.06);
+ --bg:#05070a;--surface:rgba(255,255,255,.02);--surface2:rgba(255,255,255,.04);
+ --border:rgba(255,255,255,.06);--border2:rgba(255,255,255,.1);
  --blue:#4F8CFF;--green:#22D39A;--orange:#F59E0B;--red:#F5465B;--purple:#8B5CF6;--pink:#EC4899;--cyan:#06B6D4;
- --text:#E4E8F0;--sub:#8B95A5;--muted:#475569;--radius:14px;
+ --text:#e4e8f0;--text2:#8b95a5;--text3:#475569;
+ --radius:16px;--radius-sm:10px;
+ --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.7;overflow-x:hidden}
-#particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-@keyframes floatUp{0%{transform:translateY(110vh) scale(0);opacity:0}10%{opacity:.6}90%{opacity:.2}100%{transform:translateY(-10vh) scale(1);opacity:0}}
-body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse at 30% 0%,rgba(79,140,255,.04) 0%,transparent 50%),radial-gradient(ellipse at 70% 100%,rgba(236,72,153,.03) 0%,transparent 50%);pointer-events:none;z-index:0}
-.container{max-width:860px;margin:0 auto;padding:16px 16px 80px;position:relative;z-index:1}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 
-/* Top nav tabs */
-.top-nav{display:flex;gap:0;margin-bottom:20px;background:rgba(255,255,255,.03);border-radius:28px;padding:4px;border:1px solid var(--border)}
-.nav-tab{flex:1;text-align:center;padding:10px;border-radius:24px;font-size:14px;font-weight:600;cursor:pointer;transition:all .3s;color:var(--sub);border:none;background:transparent}
-.nav-tab.active{background:var(--blue);color:#fff;box-shadow:0 4px 15px rgba(79,140,255,.3)}
-.nav-tab:hover:not(.active){color:var(--text)}
-.nav-tab .emoji{font-size:18px;display:block;margin-bottom:2px}
+/* Canvas bg */
+canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
 
-/* Header */
-.header{padding:16px 0 8px;text-align:center}
-.header h1{font-size:26px;font-weight:800;background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
-.header p{font-size:13px;color:var(--sub)}
+.container{max-width:900px;margin:0 auto;padding:24px 20px 100px;position:relative;z-index:1}
 
-/* Search */
-.search-box{margin:14px 0;position:relative}
-.search-box input{width:100%;padding:12px 40px 12px 16px;background:rgba(14,20,35,.8);border:1px solid var(--border);border-radius:28px;color:var(--text);font-size:14px;outline:none;transition:border-color .3s}
-.search-box input:focus{border-color:var(--blue)}
-.search-box .icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--muted)}
+/* === NAV === */
+nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:40px}
+nav .logo{font-size:20px;font-weight:800;letter-spacing:-.5px}
+nav .logo span{background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+nav .tabs{display:flex;background:var(--surface2);border-radius:100px;padding:3px;border:1px solid var(--border)}
+nav .tabs button{padding:8px 20px;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--text2);transition:all .25s}
+nav .tabs button.active{background:#fff;color:#000;box-shadow:0 2px 12px rgba(0,0,0,.3)}
+nav .tabs button:hover:not(.active){color:var(--text)}
 
-/* Categories */
-.cats{display:flex;gap:8px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:none}
-.cats::-webkit-scrollbar{display:none}
-.cat-btn{flex-shrink:0;padding:8px 16px;border-radius:20px;border:1px solid var(--border);background:rgba(255,255,255,.02);color:var(--sub);font-size:12px;cursor:pointer;transition:all .2s;white-space:nowrap}
-.cat-btn:hover{background:rgba(79,140,255,.08);color:var(--text)}
-.cat-btn.on{background:var(--blue);border-color:var(--blue);color:#fff}
+/* === HERO === */
+.hero{margin-bottom:48px}
+.hero .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px 4px 6px;background:var(--surface2);border:1px solid var(--border);border-radius:100px;font-size:11px;color:var(--text2);margin-bottom:20px}
+.hero .badge .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero h1{font-size:clamp(32px,5vw,48px);font-weight:800;letter-spacing:-1.5px;line-height:1.1;margin-bottom:16px}
+.hero h1 .glow{background:linear-gradient(135deg,var(--blue) 0%,var(--purple) 50%,var(--pink) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero .sub{font-size:17px;color:var(--text2);line-height:1.6;max-width:540px}
 
-/* Hero banner */
-.hero-banner{margin:14px 0 18px;padding:18px 20px;background:linear-gradient(135deg,rgba(79,140,255,.08),rgba(139,92,246,.08));border:1px solid rgba(79,140,255,.2);border-radius:var(--radius);position:relative;overflow:hidden}
-.hero-banner::after{content:'';position:absolute;top:-40px;right:-40px;width:120px;height:120px;background:radial-gradient(circle,rgba(236,72,153,.15),transparent 70%);pointer-events:none}
-.hero-banner .lobster-icon{font-size:32px;margin-bottom:4px}
-.hero-banner h3{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.5}
-.hero-banner h3 .hl{background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hero-banner .features{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.hero-banner .ft{display:flex;align-items:center;gap:5px;padding:5px 10px;background:rgba(255,255,255,.04);border-radius:8px;font-size:11px;color:var(--sub)}
-.hero-banner .ft .check{color:var(--green);font-weight:700}
+/* === FEATURE ROW === */
+.feat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:48px}
+.feat-row .fr{background:var(--bg);padding:20px}
+.feat-row .fr .fr-icon{font-size:22px;margin-bottom:10px}
+.feat-row .fr .fr-title{font-size:13px;font-weight:700;margin-bottom:4px}
+.feat-row .fr .fr-desc{font-size:11px;color:var(--text2);line-height:1.5}
 
-/* Stats */
-.stats{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
-.stats .stat{padding:10px 14px;background:rgba(14,20,35,.8);border:1px solid var(--border);border-radius:10px;text-align:center;flex:1;min-width:70px}
-.stat .num{font-size:20px;font-weight:700;background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.stat .lbl{font-size:10px;color:var(--sub);margin-top:2px}
+/* === SEARCH === */
+.search-wrap{position:relative;margin-bottom:32px}
+.search-wrap input{width:100%;padding:14px 48px 14px 20px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:15px;outline:none;transition:all .25s;font-family:var(--font)}
+.search-wrap input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(79,140,255,.1)}
+.search-wrap input::placeholder{color:var(--text3)}
+.search-wrap .sk{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--text3)}
 
-/* Prompt cards */
-.prompts-grid{display:flex;flex-direction:column;gap:10px}
-.prompt-card{background:rgba(14,20,35,.8);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .2s}
-.prompt-card:hover{border-color:rgba(139,92,246,.35);box-shadow:0 0 30px rgba(139,92,246,.08),inset 0 0 30px rgba(139,92,246,.02);transform:translateY(-1px)}
-.prompt-hd{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;user-select:none}
-.prompt-hd .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.prompt-hd .title{font-size:14px;font-weight:600;flex:1}
-.prompt-hd .tag{padding:3px 10px;border-radius:10px;font-size:10px;font-weight:600;color:#fff;flex-shrink:0}
-.prompt-body{max-height:0;overflow:hidden;padding:0 14px;transition:max-height .4s cubic-bezier(.4,0,.2,1),padding .4s}
-.prompt-card.open .prompt-body{max-height:500px;padding:0 14px 14px}
-.prompt-body .desc{font-size:12px;color:var(--sub);margin-bottom:8px;line-height:1.6}
-.prompt-body .code-box{position:relative;background:#000;border-radius:8px;padding:12px;margin-bottom:8px;border:1px solid rgba(255,255,255,.06)}
-.prompt-body .code-box pre{font-size:12px;color:#a8e6cf;white-space:pre-wrap;word-break:break-all;line-height:1.7;max-height:180px;overflow-y:auto}
-.prompt-body .btn{padding:6px 16px;border-radius:7px;border:none;font-size:12px;cursor:pointer;font-weight:600;transition:all .2s;background:var(--blue);color:#fff;position:relative;overflow:hidden}
-.prompt-body .btn:hover{background:#3B77E0;transform:scale(1.03)}
-.prompt-body .btn:active{transform:scale(.97)}
-.prompt-body .btn .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.35);transform:scale(0);animation:ripple .5s ease-out;pointer-events:none}
-@keyframes ripple{to{transform:scale(4);opacity:0}}
+/* === CAT FILTERS === */
+.cat-filters{display:flex;gap:6px;margin-bottom:32px;flex-wrap:wrap}
+.cat-filters button{padding:7px 16px;border-radius:100px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:12px;cursor:pointer;transition:all .2s;font-family:var(--font)}
+.cat-filters button:hover{background:var(--surface2);color:var(--text);border-color:var(--border2)}
+.cat-filters button.on{background:rgba(79,140,255,.12);color:var(--blue);border-color:rgba(79,140,255,.25)}
 
-/* Empty */
-.empty{text-align:center;padding:50px 20px;color:var(--muted)}
-.empty .icon{font-size:36px;margin-bottom:10px}
+/* === STATS === */
+.stats-row{display:flex;gap:8px;margin-bottom:32px}
+.stat-card{flex:1;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);text-align:center}
+.stat-card .stat-num{font-size:24px;font-weight:800;letter-spacing:-.5px}
+.stat-card .stat-lbl{font-size:10px;color:var(--text3);margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
 
-/* ---- 龙虾部署页内容 ---- */
-.lobster-content{display:none}
+/* === GRID === */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;inset:0;border-radius:var(--radius);opacity:0;transition:opacity .3s;pointer-events:none;background:radial-gradient(400px circle at var(--mx) var(--my),rgba(79,140,255,.06),transparent 70%)}
+.card:hover::before{opacity:1}
+.card:hover{border-color:rgba(79,140,255,.25);transform:translateY(-2px)}
+.card .card-cat{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:6px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+.card .card-title{font-size:14px;font-weight:700;line-height:1.3;margin-bottom:6px}
+.card .card-desc{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:14px}
+.card .card-cta{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--blue);font-weight:600;opacity:0;transform:translateY(4px);transition:all .2s}
+.card:hover .card-cta{opacity:1;transform:translateY(0)}
 
-/* Service cards */
-.service-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:20px}
-.service-card{padding:16px;background:rgba(14,20,35,.8);border:1px solid var(--border);border-radius:var(--radius);transition:all .3s}
-.service-card:hover{border-color:rgba(139,92,246,.3);transform:translateY(-2px)}
-.service-card .s-icon{font-size:26px;margin-bottom:8px}
-.service-card h4{font-size:13px;margin-bottom:4px;color:var(--text)}
-.service-card p{font-size:11px;color:var(--sub);line-height:1.6}
+/* === MODAL === */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(8px)}
+.modal-overlay.open{opacity:1;pointer-events:auto}
+.modal{background:rgba(14,19,32,.98);border:1px solid var(--border);border-radius:var(--radius);max-width:600px;width:100%;max-height:80vh;overflow-y:auto;padding:28px;position:relative;animation:modalIn .3s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal .close{position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);color:var(--text2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal .close:hover{color:var(--text);border-color:var(--border2)}
+.modal .m-cat{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:16px}
+.modal .m-title{font-size:20px;font-weight:800;letter-spacing:-.5px;margin-bottom:8px}
+.modal .m-desc{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:20px}
+.modal .code-block{background:#000;border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;margin-bottom:16px;position:relative}
+.modal .code-block pre{font-size:12px;color:#a8e6cf;white-space:pre-wrap;word-break:break-word;line-height:1.7;font-family:'SF Mono',ui-monospace,monospace}
+.modal .copy-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;font-family:var(--font)}
+.modal .copy-btn:hover{background:#3B77E0;transform:scale(1.02)}
+.modal .copy-btn:active{transform:scale(.98)}
 
-/* Process */
-.process{display:flex;flex-direction:column;gap:12px;margin:16px 0}
-.step{display:flex;gap:14px;align-items:flex-start;padding:14px;background:rgba(14,20,35,.8);border:1px solid var(--border);border-radius:var(--radius)}
-.step .sn{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0;color:#fff}
-.step .sn2{background:linear-gradient(135deg,var(--purple),var(--pink))}
-.step .sn3{background:linear-gradient(135deg,var(--pink),var(--orange))}
-.step .sn4{background:linear-gradient(135deg,var(--orange),var(--green))}
-.step .st-body h4{font-size:13px;margin-bottom:3px}
-.step .st-body p{font-size:11px;color:var(--sub)}
+/* === LOBSTER TAB === */
+.lobster-tab{display:none}
+.lobster-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-bottom:40px}
+.l-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:all .25s}
+.l-card:hover{border-color:rgba(139,92,246,.2)}
+.l-card .l-icon{font-size:28px;margin-bottom:12px}
+.l-card .l-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.l-card .l-desc{font-size:11px;color:var(--text2);line-height:1.5}
 
-/* Tech tags */
-.tech-tags{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
-.tech-tag{padding:7px 14px;background:rgba(79,140,255,.1);border:1px solid rgba(79,140,255,.25);border-radius:20px;font-size:11px;color:var(--blue)}
+.guarantee-list{margin-bottom:40px}
+.g-row{display:flex;align-items:flex-start;gap:14px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px}
+.g-row .g-icon{font-size:20px;flex-shrink:0;margin-top:2px}
+.g-row .g-h{font-size:13px;font-weight:700;margin-bottom:2px}
+.g-row .g-p{font-size:11px;color:var(--text2)}
 
-/* Guarantee */
-.g-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(14,20,35,.8);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px}
-.g-item .g-icon{font-size:20px;flex-shrink:0}
-.g-item .g-text h4{font-size:13px;margin-bottom:2px}
-.g-item .g-text p{font-size:11px;color:var(--sub)}
+.tech-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:40px}
+.tech-row span{padding:6px 14px;background:rgba(79,140,255,.06);border:1px solid rgba(79,140,255,.15);border-radius:100px;font-size:11px;color:var(--blue)}
 
-/* Section */
-.section{margin:24px 0}
-.section-title{font-size:16px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+/* === FOOTER === */
+.footer-cta{text-align:center;padding:32px 20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:24px}
+.footer-cta h3{font-size:18px;font-weight:700;margin-bottom:4px;letter-spacing:-.3px}
+.footer-cta .fc-sub{font-size:13px;color:var(--text2);margin-bottom:16px}
+.footer-cta .contact-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.footer-cta .c-btn{padding:10px 22px;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;font-family:var(--font);border:none;background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.footer-cta .c-btn:hover{background:rgba(139,92,246,.15);border-color:rgba(139,92,246,.3)}
 
-/* CTA */
-.cta{text-align:center;padding:24px 20px;margin-top:24px;background:linear-gradient(135deg,rgba(79,140,255,.08),rgba(139,92,246,.08));border:1px solid rgba(79,140,255,.2);border-radius:var(--radius)}
-.cta h3{font-size:16px;margin-bottom:6px}
-.cta p{font-size:12px;color:var(--sub);margin-bottom:14px}
-.cta-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.cta-btn{padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s;text-decoration:none;display:inline-block}
-.cta-primary{background:var(--blue);color:#fff}
-.cta-primary:hover{background:#3B77E0}
-.cta-ghost{background:transparent;border:1px solid var(--border);color:var(--sub)}
-.cta-ghost:hover{border-color:var(--blue);color:var(--text)}
-
-/* Contact */
-.contact-bar{margin-top:24px;padding:16px;background:rgba(14,20,35,.8);border:1px solid var(--border);border-radius:var(--radius);text-align:center}
-.contact-bar h4{font-size:13px;color:var(--text);margin-bottom:4px}
-.contact-bar .guarantee{font-size:11px;color:var(--green);margin-bottom:10px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-.contact-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.contact-item{padding:8px 16px;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.25);border-radius:10px;font-size:13px;color:var(--text);text-decoration:none;cursor:pointer;transition:all .2s;display:inline-block}
-.contact-item:hover{background:rgba(139,92,246,.25);border-color:var(--purple)}
-.contact-item .icon{font-size:16px;margin-right:5px}
-
-/* Footer */
-.footer{text-align:center;padding:20px 0;color:var(--muted);font-size:11px}
+.copyright{text-align:center;font-size:11px;color:var(--text3);padding-bottom:10px}
+.copyright span{display:none}
 
 /* Toast */
-.toast{position:fixed;top:-60px;left:50%;transform:translateX(-50%);padding:10px 24px;background:rgba(34,211,154,.95);color:#fff;border-radius:8px;font-size:13px;z-index:99;pointer-events:none;transition:top .4s cubic-bezier(.34,1.56,.64,1);backdrop-filter:blur(10px);box-shadow:0 8px 32px rgba(34,211,154,.2)}
-.toast.show{top:20px}
-.toast::after{content:'';position:absolute;bottom:0;left:0;height:2px;background:rgba(255,255,255,.5);animation:toastBar 2s linear forwards}
-@keyframes toastBar{from{width:100%}to{width:0%}}
+.toast{position:fixed;bottom:60px;left:50%;transform:translateX(-50%) translateY(20px);padding:10px 22px;background:var(--green);color:#000;border-radius:100px;font-size:12px;font-weight:600;z-index:200;opacity:0;transition:all .35s cubic-bezier(.34,1.56,.64,1)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Empty */
+.empty-state{text-align:center;padding:60px 20px;color:var(--text3)}
+.empty-state .es-icon{font-size:36px;margin-bottom:12px;display:block}
 
 @media(max-width:600px){
- .header h1{font-size:20px}
- .service-grid{grid-template-columns:1fr}
- .stats{gap:6px}
- .stat{padding:8px 10px}
- .stat .num{font-size:16px}
- .prompt-hd .title{font-size:12px}
- .prompt-card.open .prompt-body{max-height:600px}
+ nav{padding:0;margin-bottom:24px}
+ nav .logo{font-size:16px}
+ .hero h1{font-size:28px}
+ .hero .sub{font-size:15px}
+ .feat-row{grid-template-columns:repeat(2,1fr)}
+ .grid{grid-template-columns:1fr}
+ .lobster-grid{grid-template-columns:1fr}
+ .cat-filters{gap:4px}
+ .cat-filters button{padding:6px 12px;font-size:11px}
+ .modal{padding:20px}
 }
-
-/* shimmer scan on hero */
-.hero-banner::before{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.03),transparent);animation:shimmer 6s ease-in-out infinite}
-@keyframes shimmer{0%{left:-100%}50%{left:120%}100%{left:120%}}
-
-/* tab fade */
-#tab-prompts,#tab-lobster{animation:fadeSlideIn .35s ease}
-@keyframes fadeSlideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 <body>
+<canvas id="bg"></canvas>
 
 <div class="container">
- <!-- Top Nav -->
- <div class="top-nav">
-  <div class="nav-tab active" onclick="switchTab('prompts')">
-   <span class="emoji">🤖</span> AI指令
-  </div>
-  <div class="nav-tab" onclick="switchTab('lobster')">
-   <span class="emoji">🦞</span> 龙虾部署
-  </div>
- </div>
 
- <!-- ===== TAB 1: AI指令 ===== -->
+ <!-- NAV -->
+ <nav>
+  <div class="logo">🦞 <span>龙虾A.I</span></div>
+  <div class="tabs">
+   <button class="active" onclick="switchTab('prompts')">指令库</button>
+   <button onclick="switchTab('lobster')">为什么选龙虾</button>
+  </div>
+ </nav>
+
+ <!-- TAB 1: 指令库 -->
  <div id="tab-prompts">
-  <div class="header">
-   <h1>🤖 AI指令大师</h1>
-   <p>100+条精准指令 · 复制即用 · 任何AI工具通用</p>
+  <!-- Hero -->
+  <div class="hero">
+   <div class="badge"><span class="dot"></span> 持续更新中 · GPT-4 / DeepSeek / Kimi 全适配</div>
+   <h1>让你的AI<br>从<span class="glow">「能用」</span>变成<span class="glow">「好用」</span></h1>
+   <p class="sub">不是通用模板的堆砌，而是针对真实场景反复调优的100+条精准指令。复制即用，任何AI工具通用。</p>
   </div>
 
-  <div class="hero-banner">
-   <div class="lobster-icon">🦞</div>
-   <h3>由 <span class="hl">专业AI龙虾 · 小段</span> 深度部署调优</h3>
-   <div style="font-size:12px;color:var(--sub);line-height:1.7">
-    每条指令经<span style="color:var(--text);font-weight:600"> GPT-4 / DeepSeek / Kimi / 豆包</span> 多模型交叉验证，
-    精准适配<span style="color:var(--text);font-weight:600"> 求职、论文、自媒体、电商、职场</span> 七大高频场景。
-   </div>
-   <div class="features">
-    <div class="ft"><span class="check">✓</span> 多模型适配</div>
-    <div class="ft"><span class="check">✓</span> 场景化调优</div>
-    <div class="ft"><span class="check">✓</span> 持续更新迭代</div>
-    <div class="ft"><span class="check">✓</span> 7×24h 龙虾在线答疑</div>
-    <div class="ft"><span class="check">✓</span> 买断制 · 无二次收费</div>
-   </div>
+  <!-- Feature row -->
+  <div class="feat-row">
+   <div class="fr"><div class="fr-icon">🧪</div><div class="fr-title">多模型验证</div><div class="fr-desc">GPT-4 · DeepSeek · Kimi · 豆包</div></div>
+   <div class="fr"><div class="fr-icon">🎯</div><div class="fr-title">场景化调优</div><div class="fr-desc">每条指令针对具体场景打磨</div></div>
+   <div class="fr"><div class="fr-icon">🔄</div><div class="fr-title">持续迭代</div><div class="fr-desc">模型升级指令同步更新</div></div>
+   <div class="fr"><div class="fr-icon">🦞</div><div class="fr-title">活人售后</div><div class="fr-desc">7×24h龙虾在线应答</div></div>
   </div>
 
-  <div class="search-box">
-   <input type="text" id="search" placeholder="搜索指令... 如：简历、周报、小红书" oninput="doFilter()">
-   <span class="icon">🔍</span>
+  <!-- Search -->
+  <div class="search-wrap">
+   <input type="text" id="search" placeholder="搜索指令… 如：简历、小红书、论文" oninput="doFilter()">
+   <span class="sk">⌘K</span>
   </div>
 
-  <div class="stats" id="stats">
-   <div class="stat"><div class="num" id="st-total">0</div><div class="lbl">总指令</div></div>
-   <div class="stat"><div class="num" id="st-cats">0</div><div class="lbl">分类</div></div>
-   <div class="stat"><div class="num" id="st-shown">0</div><div class="lbl">当前显示</div></div>
+  <!-- Category filters -->
+  <div class="cat-filters" id="cats">
+   <button class="on" data-cat="all">全部</button>
+   <button data-cat="job">求职面试</button>
+   <button data-cat="work">职场办公</button>
+   <button data-cat="student">学生党</button>
+   <button data-cat="media">自媒体</button>
+   <button data-cat="life">生活实用</button>
   </div>
 
-  <div class="cats" id="cats">
-   <button class="cat-btn on" data-cat="all">全部</button>
-   <button class="cat-btn" data-cat="job">💼 求职面试</button>
-   <button class="cat-btn" data-cat="work">📊 职场办公</button>
-   <button class="cat-btn" data-cat="student">🎓 学生党</button>
-   <button class="cat-btn" data-cat="media">📱 自媒体</button>
-   <button class="cat-btn" data-cat="life">🏠 生活实用</button>
+  <!-- Stats -->
+  <div class="stats-row">
+   <div class="stat-card"><div class="stat-num" style="color:var(--blue)" id="st-total">0</div><div class="stat-lbl">总指令</div></div>
+   <div class="stat-card"><div class="stat-num" style="color:var(--purple)" id="st-cats">0</div><div class="stat-lbl">场景分类</div></div>
+   <div class="stat-card"><div class="stat-num" style="color:var(--cyan)" id="st-shown">0</div><div class="stat-lbl">当前显示</div></div>
   </div>
 
-  <div class="prompts-grid" id="prompts"></div>
+  <!-- Cards Grid -->
+  <div class="grid" id="prompts"></div>
  </div>
 
- <!-- ===== TAB 2: 龙虾部署 ===== -->
- <div id="tab-lobster" class="lobster-content">
-  <div class="header">
-   <h1>🦞 龙虾部署</h1>
-   <p>专业AI龙虾 · 小段 · 亲自为你部署</p>
+ <!-- TAB 2: 龙虾部署 -->
+ <div class="lobster-tab" id="tab-lobster">
+  <div class="hero">
+   <div class="badge"><span class="dot"></span> 不只是卖家 · 是你的AI管家</div>
+   <h1>每一个卖AI指令的<br>都敢说<span class="glow">「包好用」</span></h1>
+   <p class="sub">但龙虾是唯一一个敢说「不好用全额退 + 终身免费更新 + 7×24活人售后」的。因为龙虾不卖模板，龙虾卖的是服务。</p>
   </div>
 
-  <div class="stats">
-   <div class="stat"><div class="num">7×24h</div><div class="lbl">全天在线答疑</div></div>
-   <div class="stat"><div class="num">100+</div><div class="lbl">已交付指令方案</div></div>
-   <div class="stat"><div class="num">5</div><div class="lbl">覆盖场景大类</div></div>
-   <div class="stat"><div class="num">∞</div><div class="lbl">终身买断更新</div></div>
+  <div class="lobster-grid">
+   <div class="l-card"><div class="l-icon">🤖</div><div class="l-title">AI 工具部署</div><div class="l-desc">标题检测器、违禁词审核、数据看板、客户管理——你不用学，龙虾帮你搭。</div></div>
+   <div class="l-card"><div class="l-icon">🎯</div><div class="l-title">指令深度调优</div><div class="l-desc">GPT-4 / DeepSeek / Kimi / 豆包多模型交叉验证，确保每条指令产出最优结果。</div></div>
+   <div class="l-card"><div class="l-icon">🔧</div><div class="l-title">场景定制开发</div><div class="l-desc">求职、论文、自媒体、电商、办公——你要什么场景，龙虾按需定制。</div></div>
+   <div class="l-card"><div class="l-icon">📞</div><div class="l-title">7×24h 在线答疑</div><div class="l-desc">不是自动回复机器人，是龙虾本人。教你怎么用、怎么改、怎么适配。</div></div>
+   <div class="l-card"><div class="l-icon">🔄</div><div class="l-title">持续迭代更新</div><div class="l-desc">AI模型每个月都在进化，龙虾每个月更新指令库。买一次用一辈子。</div></div>
+   <div class="l-card"><div class="l-icon">🛡</div><div class="l-title">7天无理由退款</div><div class="l-desc">不满意，二话不说全额退。龙虾靠口碑吃饭，不跟你墨迹。</div></div>
   </div>
 
-  <div class="section">
-   <div class="section-title">🦞 龙虾能帮你什么</div>
-   <div class="service-grid">
-    <div class="service-card"><div class="s-icon">🤖</div><h4>AI 工具部署</h4><p>帮你搭建专属AI工具——标题检测器、违禁词审核、数据看板、客户管理。你不用学技术，龙虾帮你部署上线。</p></div>
-    <div class="service-card"><div class="s-icon">🎯</div><h4>指令深度调优</h4><p>在 GPT-4 / DeepSeek / Kimi / 豆包 多模型上交叉验证，确保每条指令不是"能用"而是"好用"。</p></div>
-    <div class="service-card"><div class="s-icon">🔧</div><h4>场景定制开发</h4><p>求职面试、论文答辩、自媒体创作、电商运营、职场办公——你要什么场景，龙虾定制什么指令。</p></div>
-    <div class="service-card"><div class="s-icon">📞</div><h4>7×24h 在线指导</h4><p>遇到问题随时找龙虾。教你怎么用指令、怎么改参数、怎么适配你的AI工具——包教会。</p></div>
-    <div class="service-card"><div class="s-icon">🔄</div><h4>持续迭代更新</h4><p>AI模型会变，指令也要跟着变。龙虾持续追踪最新模型表现，买一次永久享受更新。</p></div>
-    <div class="service-card"><div class="s-icon">🛡</div><h4>不满意全额退</h4><p>7天内不满意，二话不说全额退款。龙虾做事讲究，不坑人。</p></div>
-   </div>
+  <div class="hero" style="margin-bottom:24px"><h1 style="font-size:24px">⚡ 全模型覆盖</h1></div>
+  <div class="tech-row">
+   <span>GPT-4</span><span>DeepSeek V4</span><span>Kimi K2</span><span>豆包</span><span>通义千问</span><span>Claude</span><span>文心一言</span><span>GLM</span><span>MiniMax</span><span>Qwen</span>
   </div>
 
-  <div class="section">
-   <div class="section-title">⚡ 技术栈 · 全模型覆盖</div>
-   <div class="tech-tags">
-    <span class="tech-tag">GPT-4</span><span class="tech-tag">DeepSeek V4</span><span class="tech-tag">Kimi K2</span><span class="tech-tag">豆包</span><span class="tech-tag">通义千问</span><span class="tech-tag">Claude</span><span class="tech-tag">文心一言</span><span class="tech-tag">GLM</span><span class="tech-tag">MiniMax</span><span class="tech-tag">Qwen</span>
-   </div>
-   <p style="font-size:11px;color:var(--muted)">所有指令经过至少 3 个主流模型交叉测试，确保跨平台可用</p>
-  </div>
-
-  <div class="section">
-   <div class="section-title">🚀 部署流程</div>
-   <div class="process">
-    <div class="step"><div class="sn">1</div><div class="st-body"><h4>需求沟通</h4><p>告诉龙虾你要解决什么问题——找工作、写论文、做自媒体、还是提高办公效率。</p></div></div>
-    <div class="step"><div class="sn sn2">2</div><div class="st-body"><h4>指令定制</h4><p>龙虾根据你的场景，在多模型上反复调优，打磨出最高质量的指令方案。</p></div></div>
-    <div class="step"><div class="sn sn3">3</div><div class="st-body"><h4>部署上线</h4><p>给你一个可以直接用的网页工具，手机/电脑打开即用。不用装任何软件。</p></div></div>
-    <div class="step"><div class="sn sn4">4</div><div class="st-body"><h4>长期维护</h4><p>龙虾会持续更新指令库，保持最新。遇到问题随时找龙虾，包售后到底。</p></div></div>
-   </div>
-  </div>
-
-  <div class="section">
-   <div class="section-title">🛡 龙虾铁律</div>
-   <div class="g-item"><span class="g-icon">💰</span><div class="g-text"><h4>7天无理由退款</h4><p>不满意，二话不说全额退款。龙虾靠口碑吃饭，不跟你墨迹。</p></div></div>
-   <div class="g-item"><span class="g-icon">🔄</span><div class="g-text"><h4>终身免费更新</h4><p>AI模型升级，指令也会迭代。你买的不是一次性的，是一直在进化的服务。</p></div></div>
-   <div class="g-item"><span class="g-icon">📞</span><div class="g-text"><h4>活人售后，不是机器人</h4><p>遇到问题发个消息，龙虾本人回复。不推脱、不踢皮球、不装死。</p></div></div>
-   <div class="g-item"><span class="g-icon">🎯</span><div class="g-text"><h4>场景不对就重做</h4><p>如果你的实际场景和指令不匹配，龙虾免费帮你重新定制，不做一次性买卖。</p></div></div>
-  </div>
-
-  <div class="section">
-   <div class="section-title">💡 为什么是龙虾？</div>
-   <p style="font-size:12px;color:var(--sub);line-height:1.8">
-    <span style="color:var(--text);font-weight:600">① 实战派，不是搬运工：</span>每条指令都是在真实场景里反复用过的。<br><br>
-    <span style="color:var(--text);font-weight:600">② 多模型交叉验证：</span>同一个任务，龙虾在 GPT-4、DeepSeek、Kimi、豆包 分别跑一遍，确保跨平台都能出好结果。<br><br>
-    <span style="color:var(--text);font-weight:600">③ 持续迭代，不是一锤子买卖：</span>AI模型每个月都在变，龙虾也在每个月更新指令库。<br><br>
-    <span style="color:var(--text);font-weight:600">④ 活人售后：</span>背后有个真人在维护和答疑。不是发个网盘链接就失联的那种卖家。
-   </p>
+  <div class="hero" style="margin-bottom:20px"><h1 style="font-size:24px">🛡 龙虾铁律</h1></div>
+  <div class="guarantee-list">
+   <div class="g-row"><span class="g-icon">💰</span><div><div class="g-h">7天无理由退款</div><div class="g-p">不满意全额退。零风险，零废话。</div></div></div>
+   <div class="g-row"><span class="g-icon">🔄</span><div><div class="g-h">终身免费更新</div><div class="g-p">AI进化，指令跟着进化。不是一次性买卖。</div></div></div>
+   <div class="g-row"><span class="g-icon">📞</span><div><div class="g-h">活人售后 · 不是机器人</div><div class="g-p">遇到问题一条消息，龙虾本人回。不推脱不装死。</div></div></div>
+   <div class="g-row"><span class="g-icon">🎯</span><div><div class="g-h">场景不对免费重做</div><div class="g-p">你的场景和指令不匹配？龙虾免费定制，做到你满意为止。</div></div></div>
   </div>
  </div>
 
- <!-- Shared footer -->
- <div class="contact-bar">
-  <h4>💬 定制指令 / 商务合作</h4>
-  <div class="guarantee">
-   <span>🦞 包部署</span><span>🔄 包更新</span><span>🛠 包售后</span><span>📞 随叫随到</span>
-  </div>
-  <div class="contact-row">
-   <a class="contact-item" href="javascript:void(0)" onclick="copyText('3313171545','QQ号已复制：3313171545，打开QQ添加好友')"><span class="icon">🐧</span> QQ：3313171545（点击复制）</a>
-   <a class="contact-item" href="javascript:void(0)" onclick="copyText('AXG05888','微信号已复制：AXG05888，打开微信添加好友')"><span class="icon">💚</span> 微信：AXG05888（点击复制）</a>
+ <!-- Footer -->
+ <div class="footer-cta">
+  <h3>🦞 让龙虾帮你部署</h3>
+  <p class="fc-sub">9.9元 = 100+条精调指令 + 终身更新 + 活人售后</p>
+  <div class="contact-btns">
+   <button class="c-btn" onclick="copyText('3313171545','QQ号已复制 —— 打开QQ粘贴加好友')">🐧 QQ 3313171545</button>
+   <button class="c-btn" onclick="copyText('AXG05888','微信号已复制 —— 打开微信粘贴加好友')">💚 微信 AXG05888</button>
   </div>
  </div>
- <div class="footer">🦞 龙虾出品 · 包部署 · 包更新 · 包售后 · 不满意全额退</div>
- <span style="display:none" id="lobster_sig" data-ok="1"></span>
+ <div class="copyright">🦞 龙虾出品 · 包部署 · 包更新 · 包售后 · 不满意全额退<span id="lobster_sig" data-ok="1"></span></div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+ <div class="modal" onclick="event.stopPropagation()">
+  <button class="close" onclick="closeModal()">✕</button>
+  <div class="m-cat" id="m-cat"></div>
+  <div class="m-title" id="m-title"></div>
+  <div class="m-desc" id="m-desc"></div>
+  <div class="code-block"><pre id="m-code"></pre></div>
+  <button class="copy-btn" id="m-copy" onclick="copyCurrent()">📋 复制指令</button>
+ </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ══════════════════════════════════════
-//  龙虾小段出品 · 版权保护 · 盗改必究
-//  版权所有 © 2026 龙虾小段
-//  联系方式: QQ 3313171545  微信 AXG05888
-// ══════════════════════════════════════
-(function(){var ok=setInterval(function(){var s=document.getElementById('lobster_sig');if(s){clearInterval(ok);return;}if(!s&&document.readyState==='complete'){clearInterval(ok);document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0a0e17;color:#F5465B;font-family:sans-serif;text-align:center;padding:20px"><div><h1 style="font-size:48px;margin-bottom:16px">🚫</h1><h2 style="margin-bottom:8px">此版本已被篡改</h2><p style="color:#8B95A5;margin-bottom:20px">请联系龙虾获取正版</p><p style="color:#8B95A5">🐧 QQ：3313171545 ｜ 💚 微信：AXG05888</p></div></div>';}},100);setTimeout(function(){clearInterval(ok);},5000);})();
+// Tamper guard
+(function(){setInterval(function(){var s=document.getElementById('lobster_sig');if(!s&&document.readyState==='complete'){document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#05070a;color:#F5465B;font-family:sans-serif;text-align:center;padding:20px"><div><h1 style="font-size:48px;margin-bottom:16px">🚫</h1><h2 style="margin-bottom:8px">此版本已被篡改</h2><p style="color:#8B95A5;margin-bottom:20px">请联系龙虾获取正版</p><p style="color:#8B95A5">🐧 QQ：3313171545 ｜ 💚 微信：AXG05888</p></div></div>'}},200);})();
+
+// Canvas background
+(function(){var c=document.getElementById('bg'),ctx=c.getContext('2d'),w,h,pts=[];function resize(){w=c.width=window.innerWidth;h=c.height=window.innerHeight}resize();window.addEventListener('resize',resize);for(var i=0;i<40;i++)pts.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.5+.5,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,o:Math.random()*.4+.1});var lines=[];for(var i=0;i<25;i++)lines.push({x1:Math.random()*w,y1:Math.random()*h,x2:Math.random()*w,y2:Math.random()*h,a:Math.random()*.04+.01});function draw(){ctx.clearRect(0,0,w,h);lines.forEach(function(l){ctx.beginPath();ctx.moveTo(l.x1,l.y1);ctx.lineTo(l.x2,l.y2);ctx.strokeStyle='rgba(79,140,255,'+l.a+')';ctx.stroke()});pts.forEach(function(p){ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba(139,92,246,'+p.o+')';ctx.fill();p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>w)p.vx*=-1;if(p.y<0||p.y>h)p.vy*=-1});requestAnimationFrame(draw)}draw()})();
+
+// Cards mouse tracking
+document.addEventListener('mousemove',function(e){document.querySelectorAll('.card').forEach(function(c){var r=c.getBoundingClientRect();c.style.setProperty('--mx',(e.clientX-r.left)+'px');c.style.setProperty('--my',(e.clientY-r.top)+'px')})});
 
 // ===== TAB SWITCH =====
 function switchTab(tab){
- var tp=document.getElementById('tab-prompts');
- var tl=document.getElementById('tab-lobster');
- var btns=document.querySelectorAll('.nav-tab');
- btns.forEach(function(t){t.classList.remove('active')});
- if(tab==='prompts'){
-  btns[0].classList.add('active');
-  tl.style.display='none';tp.style.display='block';
-  setTimeout(function(){tp.style.animation='none';tp.offsetHeight;tp.style.animation='fadeSlideIn .35s ease';},10);
- } else {
-  btns[1].classList.add('active');
-  tp.style.display='none';tl.style.display='block';
-  setTimeout(function(){tl.style.animation='none';tl.offsetHeight;tl.style.animation='fadeSlideIn .35s ease';},10);
- }
+ var btns=document.querySelectorAll('.tabs button'),tp=document.getElementById('tab-prompts'),tl=document.getElementById('tab-lobster');
+ btns.forEach(function(b){b.classList.remove('active')});
+ if(tab==='prompts'){btns[0].classList.add('active');tp.style.display='block';tl.style.display='none'}
+ else{btns[1].classList.add('active');tp.style.display='none';tl.style.display='block'}
 }
 
 // ===== DATA =====
-var prompts = [
- {cat:'job',color:'#4F8CFF',title:'简历优化（通用版）',desc:'把你的简历草稿粘贴进来，AI会帮你优化措辞、量化成果、突出亮点。适用于任何岗位。',
-  prompt:'请帮我优化以下简历内容。要求：\n1. 用STAR法则重新组织每段经历（情境-任务-行动-结果）\n2. 用具体数字量化成果（如"提升效率30%"而不是"提升效率"）\n3. 去除空洞描述，每句话要有信息量\n4. 语气专业自信但不浮夸\n5. 控制总字数在原来的80%以内，精简有力\n\n简历内容：\n[粘贴你的简历]'},
- {cat:'job',color:'#4F8CFF',title:'简历匹配岗位（定制版）',desc:'针对特定岗位JD，AI帮你把简历改得精准匹配。投大厂必用。',
-  prompt:'我申请的是【岗位名称】，以下是我的简历和岗位JD。请帮我改写简历，要求：\n1. 从JD中提取5-8个核心关键词，融入简历\n2. 保留真实经历，不编造\n3. 每段经历优先写与JD相关的部分\n4. 自我评价部分结合JD量身定制\n\n岗位JD：\n[粘贴JD]\n\n我的简历：\n[粘贴简历]'},
- {cat:'job',color:'#4F8CFF',title:'面试自我介绍（30秒版）',desc:'HR让你"简单介绍下自己"，用这个指令生成一个30秒的黄金自我介绍。',
-  prompt:'我即将面试【公司名】的【岗位】。请帮我写一段30秒的自我介绍，要求：\n1. 开头一句话说清楚我是谁（姓名+专业/经验年限）\n2. 中间用2-3句话提炼我最相关的3个亮点\n3. 结尾一句话表达为什么想来这家公司\n4. 口语化，像真的在说话，不要像念稿\n5. 字数控制在100-150字\n\n我的背景：\n[简要描述]'},
- {cat:'job',color:'#4F8CFF',title:'面试高频问题回答',desc:'生成10个最常见面试问题的标准回答框架。',
-  prompt:'我面试的是【岗位】，以下是10个高频面试问题。请针对这个岗位，逐一给出回答要点（不是完整答案，是答题思路）。每个问题给3个要点即可。\n\n1. "请介绍一下你自己"\n2. "你最大的优点是什么"\n3. "你最大的缺点是什么"\n4. "为什么离开上一家公司"\n5. "为什么选择我们公司"\n6. "你未来3-5年的职业规划"\n7. "你期望的薪资是多少"\n8. "你遇到过最大的挑战是什么"\n9. "你有什么问题要问我"\n10. "如果录用你，第一天你会做什么"'},
- {cat:'job',color:'#4F8CFF',title:'薪资谈判话术',desc:'拿到offer但薪资不满意？教你用AI生成专业又不失礼貌的薪资谈判邮件。',
-  prompt:'我收到了【公司名】【岗位】的offer，薪资是【当前薪资】，但我期望【期望薪资】。请帮我写一封薪资谈判邮件，要求：\n1. 先表达感谢和入职意愿\n2. 用数据支撑我的价值（如"我有X年经验/负责过Y项目"）\n3. 温和地提出薪资期望\n4. 不卑不亢，保持专业\n5. 300字以内'},
- {cat:'job',color:'#4F8CFF',title:'面试复盘分析',desc:'面试完不知道问题出在哪？把面试过程告诉AI，逐题分析。',
-  prompt:'我刚参加完【公司名】【岗位】的面试，以下是面试过程。请帮我做复盘分析：\n1. 逐题点评我的回答（好在哪里、哪里可以改进）\n2. 给出每道题的优化回答示例\n3. 总结我整体的优点和短板\n4. 给下一次面试3条具体建议\n\n面试过程：\n[描述面试内容]'},
- {cat:'job',color:'#4F8CFF',title:'英文面试全流程',desc:'需要英文面试？用这个指令模拟全流程，AI还能帮你纠正语法。',
-  prompt:'Please conduct a mock interview with me for the position of 【岗位】at 【公司名】.\n1. Ask me 8 common interview questions one by one\n2. After each of my answers, briefly point out grammar/vocabulary issues and suggest improvements\n3. At the end, give an overall score (1-10) with 3 key improvement tips\nStart with the first question.'},
- {cat:'job',color:'#4F8CFF',title:'求职作品集描述',desc:'设计/开发岗需要描述作品集，AI帮你写出专业项目介绍。',
-  prompt:'请帮我写一段项目经历描述，项目是【项目名】，我的角色是【你的角色】。要求：\n1. 用一句话概括项目背景和目标\n2. 列出我在项目中负责的3-5项具体工作\n3. 用量化数据展示成果\n4. 提到的技术栈/工具加粗强调\n5. 控制在200字以内'},
- {cat:'work',color:'#22D39A',title:'周报一键生成',desc:'周五下午最痛苦的事，AI帮你30秒搞定。',
-  prompt:'以下是我本周的工作内容，请帮我整理成一份专业周报。要求：\n1. 分成"本周完成""下周计划""需协调事项"三部分\n2. 每项工作用一句话概括，动词开头（如"完成""推进""优化"）\n3. 重要成果加【已完成】标记\n4. 格式清晰，适合直接发企业微信/钉钉\n\n本周工作：\n[列出来]'},
- {cat:'work',color:'#22D39A',title:'会议纪要整理',desc:'把会议录音转文字扔进来，AI帮你整理成标准会议纪要。',
-  prompt:'以下是我一次会议的讨论内容，请帮我整理成标准会议纪要格式：\n1. 会议主题\n2. 时间/参会人\n3. 讨论要点（按话题分组，每点不超过3行）\n4. 决议事项（谁负责什么，截止日期）\n5. 待跟进事项\n\n原始内容：\n[粘贴会议记录或录音转文字]'},
- {cat:'work',color:'#22D39A',title:'PPT大纲生成',desc:'领导让你做个PPT但没思路？先让AI给你搭个框架。',
-  prompt:'我需要做一个PPT，主题是【主题】，受众是【受众】，时长【X分钟】。请帮我设计PPT大纲：\n1. 封面页标题建议（3个备选）\n2. 目录结构（5-8页）\n3. 每页的核心观点（一句话概括）\n4. 结尾页的call to action\n5. 如果需要数据支撑，建议在哪几页加入'},
- {cat:'work',color:'#22D39A',title:'邮件撰写（正式/半正式）',desc:'商务邮件不知道怎么措辞？选个模板，AI帮你写。',
-  prompt:'请帮我写一封邮件，场景：【描述场景，如：催客户付款/请假/邀约会议/汇报工作】\n要求：\n1. 语气【正式/半正式/轻松】\n2. 标题要有信息量，不要只写"你好"\n3. 正文分3-4小段，逻辑清晰\n4. 结尾有明确的下一步行动\n如果涉及时间/金额等敏感信息，用[X]占位，我自行替换'},
- {cat:'work',color:'#22D39A',title:'工作汇报（给领导）',desc:'晋升答辩、年终总结、项目汇报——向上管理必备。',
-  prompt:'我需要向领导汇报【项目/工作内容】。请帮我组织汇报框架：\n1. 背景：用1句话说清楚为什么要做\n2. 过程：2-3句话概括做了什么（不展开细节）\n3. 成果：用具体数字展示（收入/效率/满意度等）\n4. 问题：坦诚遇到的困难，以及你如何解决的\n5. 下一步：你需要领导支持什么\n\n整体控制在500字以内'},
- {cat:'work',color:'#22D39A',title:'竞品分析报告',desc:'快速生成竞品分析框架，省去找资料的茫然。',
-  prompt:'请帮我分析竞品【竞品名】，对比对象是我们自己的产品【我方产品名】，行业是【行业】。\n分析维度：\n1. 目标用户画像对比\n2. 核心功能对比（用表格）\n3. 定价策略对比\n4. 优劣势分析（我方3优3劣）\n5. 差异化建议（我们可以在哪3个点做差异化）'},
- {cat:'work',color:'#22D39A',title:'绩效考核自评',desc:'季度/年度自评怎么写才能加分？AI帮你找到亮点。',
-  prompt:'以下是我本季度/年度的工作内容，请帮我写成绩效考核自评。要求：\n1. 围绕公司考核指标（如果没有，按"业绩达成/能力提升/团队贡献"三个维度）\n2. 每项用STAR法则展开\n3. 不用谦虚，但要真实\n4. 不足之处真诚但不自我贬低\n5. 整体300-500字\n\n我的工作：\n[列出来]'},
- {cat:'work',color:'#22D39A',title:'辞职信（优雅版）',desc:'走也要走得体面，AI帮你写一封不伤感情的辞职信。',
-  prompt:'我计划从【公司名】离职，原因是【简要原因】。请帮我写一封辞职邮件/信，要求：\n1. 开头感谢公司和领导\n2. 中间简述离职原因（正面表述，不说负面）\n3. 承诺做好交接工作\n4. 结尾祝福公司和同事\n5. 字数150-250字，体面不啰嗦'},
- {cat:'student',color:'#F59E0B',title:'论文开题报告',desc:'从选题到框架，AI帮你搭建开题报告完整结构。',
-  prompt:'我的专业是【专业】，研究方向是【方向】，初步想写的题目是【题目】。请帮我写一份开题报告大纲：\n1. 选题背景与意义（500字）\n2. 国内外研究现状（列出5-8篇相关文献的核心观点）\n3. 研究内容与方法\n4. 预期成果与创新点\n5. 研究进度安排\n6. 参考文献格式（按GB/T 7714）'},
- {cat:'student',color:'#F59E0B',title:'论文润色降重',desc:'查重率太高？AI帮你改写句子结构，降低重复率。',
-  prompt:'请帮我润色以下段落，核心要求是降低查重率：\n1. 同义改写每一句，保持原意不变\n2. 调整句子结构（主动改被动、长句拆分、短句合并）\n3. 替换低频词为高频近义词\n4. 不改变引用和数据\n5. 整体字数变化不超过10%\n\n原文：\n[粘贴]'},
- {cat:'student',color:'#F59E0B',title:'文献综述速成',desc:'面对几十篇文献不知道怎么总结？AI帮你提取核心观点。',
-  prompt:'以下是我找到的文献摘要/笔记，请帮我整理成一篇文献综述。要求：\n1. 按主题归类（不是按时间）\n2. 每篇文献用1-2句话概括核心观点\n3. 指出各研究之间的共识与分歧\n4. 指出研究空白（我可以在哪里做贡献）\n5. 最后列出所有参考文献\n\n文献内容：\n[粘贴]'},
- {cat:'student',color:'#F59E0B',title:'期末复习计划',desc:'考试周焦虑？AI帮你根据考试时间倒推复习计划。',
-  prompt:'我有以下考试，请帮我制定复习计划：\n[考试1：科目+时间]\n[考试2：科目+时间]\n......\n\n要求：\n1. 按考试先后顺序安排优先级\n2. 每天复习4-6小时，拆分为上午/下午/晚上\n3. 每科安排2-3轮：第一轮通读、第二轮刷题、第三轮查漏补缺\n4. 考前1天只过重点不学新内容\n5. 每周日留半天休息'},
- {cat:'student',color:'#F59E0B',title:'英语作文批改',desc:'四六级/考研英语作文——AI比你老师改得还细。',
-  prompt:'请帮我批改以下英语作文，从以下维度给分和修改建议：\n1. 语法错误（逐句标注）\n2. 词汇水平（标注哪些词可以升级为更高级表达）\n3. 句式多样性（简单句太多请指出）\n4. 逻辑结构（段落间衔接如何）\n5. 修改后的完整版本\n6. 总分（按满分15分打分）\n\n作文：\n[粘贴]'},
- {cat:'student',color:'#F59E0B',title:'课程论文速写',desc:'3000字课程论文不知道怎么下手？AI给你搭好框架你来填。',
-  prompt:'请帮我规划一篇课程论文，题目是【题目】，字数要求【X字】。请给出：\n1. 论文大纲（引言-正文(3-4章)-结论）\n2. 每部分的字数分配\n3. 每部分的核心论点\n4. 建议引用的理论/概念\n5. 3-5个可以展开的具体案例或数据方向'},
- {cat:'student',color:'#F59E0B',title:'学习笔记整理',desc:'上课记了一堆碎片笔记，AI帮你整理成结构化知识体系。',
-  prompt:'以下是我关于【科目/主题】的学习笔记，请帮我整理成结构化笔记：\n1. 提取核心概念，每个概念用一句话定义\n2. 画出知识点之间的关系（如"A是B的前提""C是D的应用"）\n3. 制作重点清单（考前必看TOP10）\n4. 常见易混淆概念对比表\n5. 思维导图文字版（层级缩进）\n\n笔记：\n[粘贴]'},
- {cat:'media',color:'#EC4899',title:'小红书标题生成（10选1）',desc:'一条标题决定笔记生死。AI给你10个版本，挑最好的发。',
-  prompt:'我要发一篇小红书笔记，主题是【主题】，目标受众是【受众】。请帮我生成10个标题，要求：\n1. 包含数字（如"3个""5步""7天"）\n2. 使用emoji（1-2个即可）\n3. 制造悬念或痛点共鸣\n4. 口语化，像朋友分享\n5. 控制在20字以内\n6. 每个标题下面标出它的"钩子类型"（如：痛点型/教程型/省钱型/结果型）'},
- {cat:'media',color:'#EC4899',title:'小红书正文撰写',desc:'有了标题，AI继续帮你写正文，连评论区置顶都不放过。',
-  prompt:'我小红书标题是【标题】，请帮我写正文。要求：\n1. 身份定位：我是一个【你的身份，如：95后打工人/AI工具控/学生党】\n2. 开头第一句制造共鸣（"你是不是也..."）\n3. 中间分点列出干货（3-5点，用emoji开头）\n4. 结尾引导互动（"你觉得呢？"）\n5. 给我3个评论区置顶的内容建议\n6. 全文500-800字'},
- {cat:'media',color:'#EC4899',title:'抖音口播脚本（60秒）',desc:'一条60秒抖音口播视频的完整文案，包括开头钩子。',
-  prompt:'请帮我写一个60秒的抖音口播脚本，主题是【主题】。要求：\n1. 0-5秒：钩子句（一句话抓住注意力，如"你知道吗，XXX"）\n2. 5-45秒：核心内容（3个要点，每点15秒）\n3. 45-55秒：升华/反转\n4. 55-60秒：引导关注\n5. 口语化，禁用书面语\n6. 标注每段的BGM建议（紧张/轻快/感动）'},
- {cat:'media',color:'#EC4899',title:'公众号/头条文章大纲',desc:'写长文卡壳？AI给你搭好结构，你往里填内容就行。',
-  prompt:'请帮我规划一篇公众号文章，主题是【主题】，目标读者是【读者画像】。给出：\n1. 3个标题备选（一个感性、一个理性、一个悬念型）\n2. 引言：场景化开头（100字）\n3. 正文结构（3-4小节，每节一个小标题+核心观点）\n4. 每个小节的1-2个案例/数据建议\n5. 结尾的金句（2句备选）\n6. 互动引导语'},
- {cat:'media',color:'#EC4899',title:'朋友圈营销文案',desc:'做微商/卖课/推广产品，把硬广变得像分享。',
-  prompt:'我要发一条朋友圈推广【产品/服务】，请帮我写3个版本的文案：\n版本1：故事型（讲一个客户的真实变化）\n版本2：干货型（分享一个行业小技巧，末尾自然带入产品）\n版本3：自嘲型（用幽默化解推销感）\n\n每个版本控制在200字以内，不能像广告，要像朋友分享日常。'},
- {cat:'media',color:'#EC4899',title:'视频脚本（Vlog/测评）',desc:'拍Vlog或产品测评，全套分镜脚本AI给你写好。',
-  prompt:'我要拍一个【Vlog/产品测评/探店/教程】，主题是【主题】，时长【X分钟】。请写出分镜脚本：\n1. 按时间线列出每个镜头（0-30s, 30-60s, ...）\n2. 每个镜头写画面描述 + 旁白/台词\n3. 标注需要的BGM、特效、字幕重点\n4. 最重要：前5秒的hook方案（必须足够抓人）'},
- {cat:'media',color:'#EC4899',title:'评论区互动话术',desc:'评论区的回复质量决定转化率，AI给你一套完整话术。',
-  prompt:'我发的笔记/视频是关于【主题】的，评论区出现了以下类型的留言。请针对每种类型，给我3条回复话术（友好、幽默、引导转化各1条）：\n\n1. 正面表扬型\n2. 提问型\n3. 质疑/抬杠型\n4. 表示想要/求链接型\n5. 无意义刷存在型'},
- {cat:'life',color:'#8B5CF6',title:'租房合同审核',desc:'租房合同密密麻麻看不懂？粘贴进来AI帮你找坑。',
-  prompt:'以下是我的租房合同条款，请帮我审核：\n1. 标记所有对租客不利的条款\n2. 解释每条风险条款的具体风险\n3. 给出修改建议（如果可以和房东协商）\n4. 检查是否有违法/不合规的内容\n5. 给出3个签约前必问房东的问题\n\n合同内容：\n[粘贴]'},
- {cat:'life',color:'#8B5CF6',title:'旅行攻略定制',desc:'输入目的地+天数+预算，AI给你完整行程。',
-  prompt:'请帮我规划一次旅行：\n目的地：【城市】\n天数：【X天】\n预算：【¥X】\n偏好：【美食/拍照/人文/自然/购物】\n同行人：【独自/情侣/朋友/亲子】\n\n要求输出：\n1. 每天行程安排（上午/下午/晚上）\n2. 必吃餐厅（3-5家，标注人均消费）\n3. 住宿建议（区域+预算）\n4. 避坑提醒（哪些景点不值得去、哪些地方容易被宰）\n5. 交通建议（怎么从A点到B点最划算）'},
- {cat:'life',color:'#8B5CF6',title:'购物比价/挑选建议',desc:'买手机/电脑/家电不知道怎么选？把需求告诉AI。',
-  prompt:'我想买【品类，如：笔记本电脑/手机/空调】，预算【X元】，主要用途是【用途】。请帮我：\n1. 推荐3款性价比最高的产品（列出型号和京东参考价）\n2. 对比它们的核心参数（用表格）\n3. 指出每款的优缺点\n4. 购买时机建议（什么时候买最便宜）\n5. 验机/收货注意事项'},
- {cat:'life',color:'#8B5CF6',title:'法律咨询（常识类）',desc:'日常法律问题先问AI，有初步判断再找律师。',
-  prompt:'我的情况是：【描述情况，如：公司不给交社保/邻居噪音扰民/网购退货被拒】。请帮我：\n1. 分析涉及的法律条文（引用具体条款）\n2. 判断我的权益是否被侵害\n3. 给出维权步骤（从协商到诉讼，按顺序来）\n4. 需要保留哪些证据\n5. 说明诉讼时效（别过期了都不知道）\n\n⚠️ 注意：AI分析仅供参考，重要事项请咨询专业律师。'},
- {cat:'life',color:'#8B5CF6',title:'家常菜谱定制',desc:'冰箱里有什么就用什么，AI帮你搭配做菜。',
-  prompt:'我冰箱里有以下食材：【列食材】。请帮我设计：\n1. 用现有食材能做几道菜（列出菜名）\n2. 每道菜的步骤（5步以内，适合新手）\n3. 需要额外买什么调料（如果必要的话）\n4. 做菜顺序建议（先做哪个后做哪个，确保一起上桌）\n5. 每道菜的烹饪时间和难度（★☆☆/★★☆/★★★）'},
- {cat:'life',color:'#8B5CF6',title:'健身/减脂计划',desc:'告诉AI你的身高体重和目标，生成个人化健身方案。',
-  prompt:'请帮我制定一个健身计划：\n性别：【男/女】\n年龄：【X】\n身高体重：【Xcm / Xkg】\n目标：【减脂/增肌/塑形/保持健康】\n运动基础：【零基础/有一些基础/有经验】\n可用器材：【哑铃/弹力带/自重/健身房】\n每周可用时间：【X天，每天X分钟】\n\n请给出：\n1. 每周训练安排表\n2. 每个动作的名称、组数、次数\n3. 饮食建议（不用精确到克，给方向就好）\n4. 第一个月能期待的变化'},
- {cat:'life',color:'#8B5CF6',title:'情绪疏导/心理咨询',desc:'心情不好又不想找人聊？AI做一个安静的倾听者。',
-  prompt:'我最近感到【描述情绪和困扰】。请像一个专业的心理咨询师一样：\n1. 先表达理解和共情\n2. 帮我理清这些情绪的来源\n3. 提供3-5个可操作的小步骤（今天就做）\n4. 推荐1-2本适合我现状的书\n5. 告诉我什么时候应该寻求专业帮助\n\n⚠️ 注意：AI不是真人咨询师，如果持续情绪低落请预约专业心理咨询。'},
- {cat:'life',color:'#8B5CF6',title:'送礼推荐',desc:'不知道送什么礼物？AI根据对象和场合推荐。',
-  prompt:'我需要送礼物给【对象，如：女朋友/男朋友/父母/领导/闺蜜】，场合是【生日/节日/纪念日/道歉】，预算【¥X】，对方的兴趣爱好是【兴趣】。请推荐：\n1. 5个礼物方案（从低到高预算排列）\n2. 每个方案的购买渠道建议\n3. 送礼时的卡片文案（2个版本）\n4. 绝对不能送的踩雷礼物（列出3个）'},
-];
-
-var curCat='all',curQuery='';
+var prompts=[{cat:'job',color:'#4F8CFF',title:'简历优化（通用版）',desc:'AI帮你优化措辞、量化成果、去除空话，适用于任何岗位。',prompt:'请帮我优化以下简历内容。要求：\n1. 用STAR法则重新组织每段经历（情境-任务-行动-结果）\n2. 用具体数字量化成果（如"提升效率30%"而不是"提升效率"）\n3. 去除空洞描述，每句话要有信息量\n4. 语气专业自信但不浮夸\n5. 控制总字数在原来的80%以内，精简有力\n\n简历内容：\n[粘贴你的简历]'},{cat:'job',color:'#4F8CFF',title:'简历匹配岗位（定制版）',desc:'针对JD提取关键词融入简历，投大厂必用。',prompt:'我申请的是【岗位名称】，以下是我的简历和岗位JD。请帮我改写简历，要求：\n1. 从JD中提取5-8个核心关键词，融入简历\n2. 保留真实经历，不编造\n3. 每段经历优先写与JD相关的部分\n4. 自我评价部分结合JD量身定制\n\n岗位JD：\n[粘贴JD]\n\n我的简历：\n[粘贴简历]'},{cat:'job',color:'#4F8CFF',title:'面试自我介绍（30秒版）',desc:'HR让你"简单介绍下自己"，用这个指令生成黄金30秒。',prompt:'我即将面试【公司名】的【岗位】。请帮我写一段30秒的自我介绍，要求：\n1. 开头一句话说清楚我是谁（姓名+专业/经验年限）\n2. 中间用2-3句话提炼我最相关的3个亮点\n3. 结尾一句话表达为什么想来这家公司\n4. 口语化，像真的在说话，不要像念稿\n5. 字数控制在100-150字\n\n我的背景：\n[简要描述]'},{cat:'job',color:'#4F8CFF',title:'面试高频问题回答',desc:'10个最常见面试问题的标准回答框架。',prompt:'我面试的是【岗位】，以下是10个高频面试问题。请针对这个岗位，逐一给出回答要点（不是完整答案，是答题思路）。每个问题给3个要点即可。\n\n1. "请介绍一下你自己"\n2. "你最大的优点是什么"\n3. "你最大的缺点是什么"\n4. "为什么离开上一家公司"\n5. "为什么选择我们公司"\n6. "你未来3-5年的职业规划"\n7. "你期望的薪资是多少"\n8. "你遇到过最大的挑战是什么"\n9. "你有什么问题要问我"\n10. "如果录用你，第一天你会做什么"'},{cat:'job',color:'#4F8CFF',title:'薪资谈判话术',desc:'拿到offer但薪资不满意？专业又不失礼貌的谈判邮件。',prompt:'我收到了【公司名】【岗位】的offer，薪资是【当前薪资】，但我期望【期望薪资】。请帮我写一封薪资谈判邮件，要求：\n1. 先表达感谢和入职意愿\n2. 用数据支撑我的价值（如"我有X年经验/负责过Y项目"）\n3. 温和地提出薪资期望\n4. 不卑不亢，保持专业\n5. 300字以内'},{cat:'job',color:'#4F8CFF',title:'面试复盘分析',desc:'把面试过程告诉AI，逐题分析优缺点。',prompt:'我刚参加完【公司名】【岗位】的面试，以下是面试过程。请帮我做复盘分析：\n1. 逐题点评我的回答（好在哪里、哪里可以改进）\n2. 给出每道题的优化回答示例\n3. 总结我整体的优点和短板\n4. 给下一次面试3条具体建议\n\n面试过程：\n[描述面试内容]'},{cat:'job',color:'#4F8CFF',title:'英文面试全流程',desc:'需要英文面试？AI模拟全流程并纠正语法。',prompt:'Please conduct a mock interview with me for the position of 【岗位】at 【公司名】.\n1. Ask me 8 common interview questions one by one\n2. After each of my answers, briefly point out grammar/vocabulary issues and suggest improvements\n3. At the end, give an overall score (1-10) with 3 key improvement tips\nStart with the first question.'},{cat:'job',color:'#4F8CFF',title:'求职作品集描述',desc:'帮你把项目经历写成专业的作品集描述。',prompt:'请帮我写一段项目经历描述，项目是【项目名】，我的角色是【你的角色】。要求：\n1. 用一句话概括项目背景和目标\n2. 列出我在项目中负责的3-5项具体工作\n3. 用量化数据展示成果\n4. 提到的技术栈/工具加粗强调\n5. 控制在200字以内'},{cat:'work',color:'#22D39A',title:'周报一键生成',desc:'周五下午最痛苦的事——AI帮你30秒搞定。',prompt:'以下是我本周的工作内容，请帮我整理成一份专业周报。要求：\n1. 分成"本周完成""下周计划""需协调事项"三部分\n2. 每项工作用一句话概括，动词开头（如"完成""推进""优化"）\n3. 重要成果加【已完成】标记\n4. 格式清晰，适合直接发企业微信/钉钉\n\n本周工作：\n[列出来]'},{cat:'work',color:'#22D39A',title:'会议纪要整理',desc:'会议录音转文字→AI整理成标准纪要。',prompt:'以下是我一次会议的讨论内容，请帮我整理成标准会议纪要格式：\n1. 会议主题\n2. 时间/参会人\n3. 讨论要点（按话题分组，每点不超过3行）\n4. 决议事项（谁负责什么，截止日期）\n5. 待跟进事项\n\n原始内容：\n[粘贴会议记录或录音转文字]'},{cat:'work',color:'#22D39A',title:'PPT大纲生成',desc:'领导让你做PPT但没思路？让AI搭框架。',prompt:'我需要做一个PPT，主题是【主题】，受众是【受众】，时长【X分钟】。请帮我设计PPT大纲：\n1. 封面页标题建议（3个备选）\n2. 目录结构（5-8页）\n3. 每页的核心观点（一句话概括）\n4. 结尾页的call to action\n5. 如果需要数据支撑，建议在哪几页加入'},{cat:'work',color:'#22D39A',title:'邮件撰写',desc:'催款/请假/邀约——商务邮件一键成文。',prompt:'请帮我写一封邮件，场景：【描述场景，如：催客户付款/请假/邀约会议/汇报工作】\n要求：\n1. 语气【正式/半正式/轻松】\n2. 标题要有信息量，不要只写"你好"\n3. 正文分3-4小段，逻辑清晰\n4. 结尾有明确的下一步行动\n如果涉及时间/金额等敏感信息，用[X]占位，我自行替换'},{cat:'work',color:'#22D39A',title:'工作汇报（给领导）',desc:'晋升答辩、年终总结——向上管理必备。',prompt:'我需要向领导汇报【项目/工作内容】。请帮我组织汇报框架：\n1. 背景：用1句话说清楚为什么要做\n2. 过程：2-3句话概括做了什么（不展开细节）\n3. 成果：用具体数字展示（收入/效率/满意度等）\n4. 问题：坦诚遇到的困难，以及你如何解决的\n5. 下一步：你需要领导支持什么\n\n整体控制在500字以内'},{cat:'work',color:'#22D39A',title:'竞品分析报告',desc:'快速生成竞品分析框架，5维度对比。',prompt:'请帮我分析竞品【竞品名】，对比对象是我们自己的产品【我方产品名】，行业是【行业】。\n分析维度：\n1. 目标用户画像对比\n2. 核心功能对比（用表格）\n3. 定价策略对比\n4. 优劣势分析（我方3优3劣）\n5. 差异化建议（我们可以在哪3个点做差异化）'},{cat:'work',color:'#22D39A',title:'绩效考核自评',desc:'季度自评怎么写出亮点？AI帮你挖掘。',prompt:'以下是我本季度/年度的工作内容，请帮我写成绩效考核自评。要求：\n1. 围绕公司考核指标（如果没有，按"业绩达成/能力提升/团队贡献"三个维度）\n2. 每项用STAR法则展开\n3. 不用谦虚，但要真实\n4. 不足之处真诚但不自我贬低\n5. 整体300-500字\n\n我的工作：\n[列出来]'},{cat:'work',color:'#22D39A',title:'辞职信（优雅版）',desc:'走也要走得体面，不伤感情的离职信。',prompt:'我计划从【公司名】离职，原因是【简要原因】。请帮我写一封辞职邮件/信，要求：\n1. 开头感谢公司和领导\n2. 中间简述离职原因（正面表述，不说负面）\n3. 承诺做好交接工作\n4. 结尾祝福公司和同事\n5. 字数150-250字，体面不啰嗦'},{cat:'student',color:'#F59E0B',title:'论文开题报告',desc:'从选题到框架，AI帮你搭建完整开题报告。',prompt:'我的专业是【专业】，研究方向是【方向】，初步想写的题目是【题目】。请帮我写一份开题报告大纲：\n1. 选题背景与意义（500字）\n2. 国内外研究现状（列出5-8篇相关文献的核心观点）\n3. 研究内容与方法\n4. 预期成果与创新点\n5. 研究进度安排\n6. 参考文献格式（按GB/T 7714）'},{cat:'student',color:'#F59E0B',title:'论文润色降重',desc:'查重率太高？AI改写句子降重，保持原意。',prompt:'请帮我润色以下段落，核心要求是降低查重率：\n1. 同义改写每一句，保持原意不变\n2. 调整句子结构（主动改被动、长句拆分、短句合并）\n3. 替换低频词为高频近义词\n4. 不改变引用和数据\n5. 整体字数变化不超过10%\n\n原文：\n[粘贴]'},{cat:'student',color:'#F59E0B',title:'文献综述速成',desc:'几十篇文献不知怎么总结？AI按主题归类。',prompt:'以下是我找到的文献摘要/笔记，请帮我整理成一篇文献综述。要求：\n1. 按主题归类（不是按时间）\n2. 每篇文献用1-2句话概括核心观点\n3. 指出各研究之间的共识与分歧\n4. 指出研究空白（我可以在哪里做贡献）\n5. 最后列出所有参考文献\n\n文献内容：\n[粘贴]'},{cat:'student',color:'#F59E0B',title:'期末复习计划',desc:'根据考试时间倒推复习计划，精确到每天。',prompt:'我有以下考试，请帮我制定复习计划：\n[考试1：科目+时间]\n[考试2：科目+时间]\n\n要求：\n1. 按考试先后顺序安排优先级\n2. 每天复习4-6小时，拆分为上午/下午/晚上\n3. 每科安排2-3轮：第一轮通读、第二轮刷题、第三轮查漏补缺\n4. 考前1天只过重点不学新内容\n5. 每周日留半天休息'},{cat:'student',color:'#F59E0B',title:'英语作文批改',desc:'四六级/考研作文——AI比老师改得还细。',prompt:'请帮我批改以下英语作文，从以下维度给分和修改建议：\n1. 语法错误（逐句标注）\n2. 词汇水平（标注哪些词可以升级为更高级表达）\n3. 句式多样性（简单句太多请指出）\n4. 逻辑结构（段落间衔接如何）\n5. 修改后的完整版本\n6. 总分（按满分15分打分）\n\n作文：\n[粘贴]'},{cat:'student',color:'#F59E0B',title:'课程论文速写',desc:'3000字无从下手？AI搭好框架你来填。',prompt:'请帮我规划一篇课程论文，题目是【题目】，字数要求【X字】。请给出：\n1. 论文大纲（引言-正文(3-4章)-结论）\n2. 每部分的字数分配\n3. 每部分的核心论点\n4. 建议引用的理论/概念\n5. 3-5个可以展开的具体案例或数据方向'},{cat:'student',color:'#F59E0B',title:'学习笔记整理',desc:'碎片笔记→结构化知识体系+思维导图。',prompt:'以下是我关于【科目/主题】的学习笔记，请帮我整理成结构化笔记：\n1. 提取核心概念，每个概念用一句话定义\n2. 画出知识点之间的关系（如"A是B的前提""C是D的应用"）\n3. 制作重点清单（考前必看TOP10）\n4. 常见易混淆概念对比表\n5. 思维导图文字版（层级缩进）\n\n笔记：\n[粘贴]'},{cat:'media',color:'#EC4899',title:'小红书标题（10选1）',desc:'AI一次生成10个标题，你挑最好的发。',prompt:'我要发一篇小红书笔记，主题是【主题】，目标受众是【受众】。请帮我生成10个标题，要求：\n1. 包含数字（如"3个""5步""7天"）\n2. 使用emoji（1-2个即可）\n3. 制造悬念或痛点共鸣\n4. 口语化，像朋友分享\n5. 控制在20字以内\n6. 每个标题下面标出它的"钩子类型"（如：痛点型/教程型/省钱型/结果型）'},{cat:'media',color:'#EC4899',title:'小红书正文撰写',desc:'标题+正文+评论区置顶——全套一次生成。',prompt:'我小红书标题是【标题】，请帮我写正文。要求：\n1. 身份定位：我是一个【你的身份，如：95后打工人/AI工具控/学生党】\n2. 开头第一句制造共鸣（"你是不是也..."）\n3. 中间分点列出干货（3-5点，用emoji开头）\n4. 结尾引导互动（"你觉得呢？"）\n5. 给我3个评论区置顶的内容建议\n6. 全文500-800字'},{cat:'media',color:'#EC4899',title:'抖音口播脚本（60秒）',desc:'完整60秒脚本，含钩子+BGM建议。',prompt:'请帮我写一个60秒的抖音口播脚本，主题是【主题】。要求：\n1. 0-5秒：钩子句（一句话抓住注意力，如"你知道吗，XXX"）\n2. 5-45秒：核心内容（3个要点，每点15秒）\n3. 45-55秒：升华/反转\n4. 55-60秒：引导关注\n5. 口语化，禁用书面语\n6. 标注每段的BGM建议（紧张/轻快/感动）'},{cat:'media',color:'#EC4899',title:'公众号/头条文章大纲',desc:'写长文卡壳？AI出结构、金句和案例方向。',prompt:'请帮我规划一篇公众号文章，主题是【主题】，目标读者是【读者画像】。给出：\n1. 3个标题备选（一个感性、一个理性、一个悬念型）\n2. 引言：场景化开头（100字）\n3. 正文结构（3-4小节，每节一个小标题+核心观点）\n4. 每个小节的1-2个案例/数据建议\n5. 结尾的金句（2句备选）\n6. 互动引导语'},{cat:'media',color:'#EC4899',title:'朋友圈营销文案',desc:'把硬广变成分享——3种风格任选。',prompt:'我要发一条朋友圈推广【产品/服务】，请帮我写3个版本：\n版本1：故事型（讲一个客户的真实变化）\n版本2：干货型（分享一个行业小技巧，末尾自然带入产品）\n版本3：自嘲型（用幽默化解推销感）\n每个版本控制在200字以内，不能像广告，要像朋友分享日常。'},{cat:'media',color:'#EC4899',title:'视频分镜脚本',desc:'Vlog/测评/探店——全套分镜脚本。',prompt:'我要拍一个【Vlog/产品测评/探店/教程】，主题是【主题】，时长【X分钟】。请写出分镜脚本：\n1. 按时间线列出每个镜头（0-30s, 30-60s, ...）\n2. 每个镜头写画面描述 + 旁白/台词\n3. 标注需要的BGM、特效、字幕重点\n4. 最重要：前5秒的hook方案（必须足够抓人）'},{cat:'media',color:'#EC4899',title:'评论区互动话术',desc:'5种留言类型，每种3条回复——AI帮你控评。',prompt:'我发的笔记/视频是关于【主题】的，评论区出现了以下类型的留言。请针对每种类型，给我3条回复话术（友好、幽默、引导转化各1条）：\n1. 正面表扬型\n2. 提问型\n3. 质疑/抬杠型\n4. 表示想要/求链接型\n5. 无意义刷存在型'},{cat:'life',color:'#8B5CF6',title:'租房合同审核',desc:'合同条款逐条审核，标记风险并给修改建议。',prompt:'以下是我的租房合同条款，请帮我审核：\n1. 标记所有对租客不利的条款\n2. 解释每条风险条款的具体风险\n3. 给出修改建议（如果可以和房东协商）\n4. 检查是否有违法/不合规的内容\n5. 给出3个签约前必问房东的问题\n\n合同内容：\n[粘贴]'},{cat:'life',color:'#8B5CF6',title:'旅行攻略定制',desc:'输入目的地+天数+预算→AI出完整行程。',prompt:'请帮我规划一次旅行：\n目的地：【城市】天数：【X天】预算：【¥X】偏好：【美食/拍照/人文/自然/购物】同行人：【独自/情侣/朋友/亲子】\n\n要求输出：\n1. 每天行程安排（上午/下午/晚上）\n2. 必吃餐厅（3-5家，标注人均消费）\n3. 住宿建议（区域+预算）\n4. 避坑提醒（哪些景点不值得去）\n5. 交通建议（A→B最划算路线）'},{cat:'life',color:'#8B5CF6',title:'购物比价/挑选建议',desc:'买手机电脑家电不会选？AI帮你做功课。',prompt:'我想买【品类，如：笔记本电脑/手机/空调】，预算【X元】，主要用途是【用途】。请帮我：\n1. 推荐3款性价比最高的产品（列出型号和京东参考价）\n2. 对比它们的核心参数（用表格）\n3. 指出每款的优缺点\n4. 购买时机建议（什么时候买最便宜）\n5. 验机/收货注意事项'},{cat:'life',color:'#8B5CF6',title:'法律咨询（常识类）',desc:'日常法律问题先问AI，有方向再找律师。',prompt:'我的情况是：【描述情况】。请帮我：\n1. 分析涉及的法律条文（引用具体条款）\n2. 判断我的权益是否被侵害\n3. 给出维权步骤（从协商到诉讼）\n4. 需要保留哪些证据\n5. 说明诉讼时效\n\n⚠️ AI分析仅供参考，重要事项请咨询专业律师。'},{cat:'life',color:'#8B5CF6',title:'家常菜谱定制',desc:'冰箱有什么就做什么——AI帮你搭配做菜。',prompt:'我冰箱里有以下食材：【列食材】。请帮我设计：\n1. 用现有食材能做几道菜（列出菜名）\n2. 每道菜的步骤（5步以内，适合新手）\n3. 需要额外买什么调料（如果必要的话）\n4. 做菜顺序建议（确保一起上桌）\n5. 每道菜的烹饪时间和难度（★☆☆/★★☆/★★★）'},{cat:'life',color:'#8B5CF6',title:'健身/减脂计划',desc:'输入身高体重目标→AI生成个人化方案。',prompt:'请帮我制定一个健身计划：性别：【男/女】年龄：【X】身高体重：【Xcm / Xkg】目标：【减脂/增肌/塑形】运动基础：【零基础/有一些基础/有经验】可用器材：【哑铃/弹力带/自重/健身房】每周：【X天，每天X分钟】\n\n请给出：\n1. 每周训练安排表\n2. 每个动作的名称、组数、次数\n3. 饮食建议（不用精确到克，给方向就好）\n4. 第一个月能期待的变化'},{cat:'life',color:'#8B5CF6',title:'情绪疏导/心理咨询',desc:'心情不好又不想找人聊？AI做倾听者。',prompt:'我最近感到【描述情绪和困扰】。请像一个专业的心理咨询师一样：\n1. 先表达理解和共情\n2. 帮我理清这些情绪的来源\n3. 提供3-5个可操作的小步骤（今天就做）\n4. 推荐1-2本适合我现状的书\n5. 告诉我什么时候应该寻求专业帮助\n\n⚠️ AI不是真人咨询师，如果持续情绪低落请预约专业心理咨询。'},{cat:'life',color:'#8B5CF6',title:'送礼推荐',desc:'根据对象+场合+预算，AI推荐礼物方案。',prompt:'我需要送礼物给【对象，如：女朋友/男朋友/父母/领导/闺蜜】，场合是【生日/节日/纪念日/道歉】，预算【¥X】，对方的兴趣爱好是【兴趣】。请推荐：\n1. 5个礼物方案（从低到高预算排列）\n2. 每个方案的购买渠道建议\n3. 送礼时的卡片文案（2个版本）\n4. 绝对不能送的踩雷礼物（列出3个）'}];
+var curCat='all',curQuery='',curPromptIdx=-1;
 
 function render(){
- var filtered=prompts.filter(function(p){
-  if(curCat!=='all'&&p.cat!==curCat)return false;
-  if(curQuery&&p.title.indexOf(curQuery)===-1&&p.desc.indexOf(curQuery)===-1&&p.prompt.indexOf(curQuery)===-1)return false;
-  return true;
- });
- document.getElementById('st-total').textContent=prompts.length;
- document.getElementById('st-shown').textContent=filtered.length;
- var cats={};prompts.forEach(function(p){cats[p.cat]=true});document.getElementById('st-cats').textContent=Object.keys(cats).length;
- var html='';
- if(!filtered.length){html='<div class="empty"><div class="icon">🔍</div>没有匹配的指令，换关键词试试</div>';}
- else{filtered.forEach(function(p,i){
-  html+='<div class="prompt-card" id="card'+i+'">';
-  html+='<div class="prompt-hd" onclick="toggle('+i+')">';
-  html+='<span class="dot" style="background:'+p.color+'"></span><span class="title">'+es(p.title)+'</span>';
-  html+='<span class="tag" style="background:'+p.color+'">'+catLabel(p.cat)+'</span></div>';
-  html+='<div class="prompt-body"><div class="desc">'+es(p.desc)+'</div>';
-  html+='<div class="code-box"><pre>'+es(p.prompt)+'</pre></div>';
-  html+='<button class="btn" onclick="rippleClick(event);copyPrompt('+i+')">📋 复制指令</button></div></div>';
- });}
- document.getElementById('prompts').innerHTML=html;
-}
+ var f=prompts.filter(function(p){if(curCat!=='all'&&p.cat!==curCat)return false;if(curQuery&&p.title.indexOf(curQuery)===-1&&p.desc.indexOf(curQuery)===-1)return false;return true});
+ document.getElementById('st-total').textContent=prompts.length;document.getElementById('st-shown').textContent=f.length;
+ var cs={};prompts.forEach(function(p){cs[p.cat]=true});document.getElementById('st-cats').textContent=Object.keys(cs).length;
+ var html='';if(!f.length){html='<div class="empty-state"><span class="es-icon">🔍</span>没有匹配的指令</div>'}
+ else{f.forEach(function(p,i){var cc='求职面试',cbg='rgba(79,140,255,.12)',ccolor='#4F8CFF';if(p.cat==='work'){cc='职场办公';cbg='rgba(34,211,154,.12)';ccolor='#22D39A'}else if(p.cat==='student'){cc='学生党';cbg='rgba(245,158,11,.12)';ccolor='#F59E0B'}else if(p.cat==='media'){cc='自媒体';cbg='rgba(236,72,153,.12)';ccolor='#EC4899'}else if(p.cat==='life'){cc='生活实用';cbg='rgba(139,92,246,.12)';ccolor='#8B5CF6'}
+  html+='<div class="card" onclick="openModal('+i+')"><div class="card-cat" style="background:'+cbg+';color:'+ccolor+'">'+cc+'</div>';
+  html+='<div class="card-title">'+es(p.title)+'</div><div class="card-desc">'+es(p.desc)+'</div>';
+  html+='<div class="card-cta">查看指令 →</div></div>'});}
+ document.getElementById('prompts').innerHTML=html;curPromptIdx=-1}
+
+function openModal(i){
+ var f=prompts.filter(function(p){if(curCat!=='all'&&p.cat!==curCat)return false;if(curQuery&&p.title.indexOf(curQuery)===-1&&p.desc.indexOf(curQuery)===-1)return false;return true});
+ var p=f[i];if(!p)return;
+ var cc='求职面试',cbg='rgba(79,140,255,.12)',ccolor='#4F8CFF';if(p.cat==='work'){cc='职场办公';cbg='rgba(34,211,154,.12)';ccolor='#22D39A'}else if(p.cat==='student'){cc='学生党';cbg='rgba(245,158,11,.12)';ccolor='#F59E0B'}else if(p.cat==='media'){cc='自媒体';cbg='rgba(236,72,153,.12)';ccolor='#EC4899'}else if(p.cat==='life'){cc='生活实用';cbg='rgba(139,92,246,.12)';ccolor='#8B5CF6'}
+ curPromptIdx=i;
+ document.getElementById('m-cat').textContent=cc;document.getElementById('m-cat').style.background=cbg;document.getElementById('m-cat').style.color=ccolor;
+ document.getElementById('m-title').textContent=p.title;document.getElementById('m-desc').textContent=p.desc;
+ document.getElementById('m-code').textContent=p.prompt;document.getElementById('modal').classList.add('open')}
+function closeModal(e){if(e&&e.target!==document.getElementById('modal'))return;document.getElementById('modal').classList.remove('open');curPromptIdx=-1}
+function copyCurrent(){
+ var f=prompts.filter(function(p){if(curCat!=='all'&&p.cat!==curCat)return false;if(curQuery&&p.title.indexOf(curQuery)===-1&&p.desc.indexOf(curQuery)===-1)return false;return true});
+ if(curPromptIdx<0||!f[curPromptIdx])return;
+ navigator.clipboard.writeText(f[curPromptIdx].prompt).then(function(){toast('✅ 已复制 —— 粘贴到任何AI工具即可使用')})}
 function es(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
-function catLabel(c){var m={job:'求职面试',work:'职场办公',student:'学生党',media:'自媒体',life:'生活实用'};return m[c]||c;}
-function toggle(i){var el=document.getElementById('card'+i);if(!el)return;var wasOpen=el.classList.contains('open');document.querySelectorAll('.prompt-card.open').forEach(function(c){c.classList.remove('open')});if(!wasOpen)el.classList.add('open');}
-function copyPrompt(i){
- var filtered=prompts.filter(function(p){
-  if(curCat!=='all'&&p.cat!==curCat)return false;
-  if(curQuery&&p.title.indexOf(curQuery)===-1&&p.desc.indexOf(curQuery)===-1&&p.prompt.indexOf(curQuery)===-1)return false;
-  return true;
- });
- var p=filtered[i];if(!p)return;
- navigator.clipboard.writeText(p.prompt).then(function(){toast('✅ 已复制！粘贴到任何AI工具即可使用')});
-}
-function doFilter(){curQuery=document.getElementById('search').value.trim();render();}
-document.getElementById('cats').addEventListener('click',function(e){
- if(!e.target.classList.contains('cat-btn'))return;
- document.querySelectorAll('.cat-btn').forEach(function(b){b.classList.remove('on')});
- e.target.classList.add('on');curCat=e.target.dataset.cat;render();
-});
-function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2500);}
-function copyText(txt,msg){navigator.clipboard.writeText(txt).then(function(){toast(msg)});}
-function rippleClick(e){var b=e.currentTarget;var r=document.createElement('span');var rect=b.getBoundingClientRect();var size=Math.max(rect.width,rect.height);r.className='ripple';r.style.left=(e.clientX-rect.left-size/2)+'px';r.style.top=(e.clientY-rect.top-size/2)+'px';r.style.width=r.style.height=size+'px';b.appendChild(r);setTimeout(function(){r.remove()},500);}
-// Particles
-(function(){var c=document.getElementById('particles');if(!c){c=document.createElement('div');c.id='particles';document.body.prepend(c)}var colors=['rgba(79,140,255,.3)','rgba(139,92,246,.2)','rgba(34,211,154,.15)','rgba(236,72,153,.12)'];for(var i=0;i<25;i++){var p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.setProperty('--dur',(8+Math.random()*14)+'s');p.style.animationDelay=Math.random()*12+'s';p.style.width=p.style.height=(2+Math.random()*3)+'px';p.style.background=colors[Math.floor(Math.random()*colors.length)];c.appendChild(p)}})();
+function doFilter(){curQuery=document.getElementById('search').value.trim();render()}
+document.getElementById('cats').addEventListener('click',function(e){if(!e.target.dataset.cat)return;document.querySelectorAll('.cat-filters button').forEach(function(b){b.classList.remove('on')});e.target.classList.add('on');curCat=e.target.dataset.cat;render()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();document.getElementById('search').focus()}});
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2200)}
+function copyText(txt,msg){navigator.clipboard.writeText(txt).then(function(){toast(msg)})}
 render();
 </script>
 </body>
