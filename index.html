@@ -13,7 +13,9 @@
  --text:#E4E8F0;--sub:#8B95A5;--muted:#475569;--radius:14px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.7}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.7;overflow-x:hidden}
+#particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+@keyframes floatUp{0%{transform:translateY(110vh) scale(0);opacity:0}10%{opacity:.6}90%{opacity:.2}100%{transform:translateY(-10vh) scale(1);opacity:0}}
 body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse at 30% 0%,rgba(79,140,255,.04) 0%,transparent 50%),radial-gradient(ellipse at 70% 100%,rgba(236,72,153,.03) 0%,transparent 50%);pointer-events:none;z-index:0}
 .container{max-width:860px;margin:0 auto;padding:16px 16px 80px;position:relative;z-index:1}
 
@@ -61,18 +63,21 @@ body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellips
 /* Prompt cards */
 .prompts-grid{display:flex;flex-direction:column;gap:10px}
 .prompt-card{background:rgba(14,20,35,.8);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .2s}
-.prompt-card:hover{border-color:rgba(255,255,255,.15)}
+.prompt-card:hover{border-color:rgba(139,92,246,.35);box-shadow:0 0 30px rgba(139,92,246,.08),inset 0 0 30px rgba(139,92,246,.02);transform:translateY(-1px)}
 .prompt-hd{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;user-select:none}
 .prompt-hd .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .prompt-hd .title{font-size:14px;font-weight:600;flex:1}
 .prompt-hd .tag{padding:3px 10px;border-radius:10px;font-size:10px;font-weight:600;color:#fff;flex-shrink:0}
-.prompt-body{display:none;padding:0 14px 14px}
-.prompt-card.open .prompt-body{display:block}
+.prompt-body{max-height:0;overflow:hidden;padding:0 14px;transition:max-height .4s cubic-bezier(.4,0,.2,1),padding .4s}
+.prompt-card.open .prompt-body{max-height:500px;padding:0 14px 14px}
 .prompt-body .desc{font-size:12px;color:var(--sub);margin-bottom:8px;line-height:1.6}
 .prompt-body .code-box{position:relative;background:#000;border-radius:8px;padding:12px;margin-bottom:8px;border:1px solid rgba(255,255,255,.06)}
 .prompt-body .code-box pre{font-size:12px;color:#a8e6cf;white-space:pre-wrap;word-break:break-all;line-height:1.7;max-height:180px;overflow-y:auto}
-.prompt-body .btn{padding:6px 16px;border-radius:7px;border:none;font-size:12px;cursor:pointer;font-weight:600;transition:all .2s;background:var(--blue);color:#fff}
-.prompt-body .btn:hover{background:#3B77E0}
+.prompt-body .btn{padding:6px 16px;border-radius:7px;border:none;font-size:12px;cursor:pointer;font-weight:600;transition:all .2s;background:var(--blue);color:#fff;position:relative;overflow:hidden}
+.prompt-body .btn:hover{background:#3B77E0;transform:scale(1.03)}
+.prompt-body .btn:active{transform:scale(.97)}
+.prompt-body .btn .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.35);transform:scale(0);animation:ripple .5s ease-out;pointer-events:none}
+@keyframes ripple{to{transform:scale(4);opacity:0}}
 
 /* Empty */
 .empty{text-align:center;padding:50px 20px;color:var(--muted)}
@@ -137,8 +142,10 @@ body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellips
 .footer{text-align:center;padding:20px 0;color:var(--muted);font-size:11px}
 
 /* Toast */
-.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:10px 24px;background:var(--green);color:#fff;border-radius:8px;font-size:13px;z-index:99;opacity:0;transition:opacity .3s;pointer-events:none}
-.toast.show{opacity:1}
+.toast{position:fixed;top:-60px;left:50%;transform:translateX(-50%);padding:10px 24px;background:rgba(34,211,154,.95);color:#fff;border-radius:8px;font-size:13px;z-index:99;pointer-events:none;transition:top .4s cubic-bezier(.34,1.56,.64,1);backdrop-filter:blur(10px);box-shadow:0 8px 32px rgba(34,211,154,.2)}
+.toast.show{top:20px}
+.toast::after{content:'';position:absolute;bottom:0;left:0;height:2px;background:rgba(255,255,255,.5);animation:toastBar 2s linear forwards}
+@keyframes toastBar{from{width:100%}to{width:0%}}
 
 @media(max-width:600px){
  .header h1{font-size:20px}
@@ -147,7 +154,16 @@ body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellips
  .stat{padding:8px 10px}
  .stat .num{font-size:16px}
  .prompt-hd .title{font-size:12px}
+ .prompt-card.open .prompt-body{max-height:600px}
 }
+
+/* shimmer scan on hero */
+.hero-banner::before{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.03),transparent);animation:shimmer 6s ease-in-out infinite}
+@keyframes shimmer{0%{left:-100%}50%{left:120%}100%{left:120%}}
+
+/* tab fade */
+#tab-prompts,#tab-lobster{animation:fadeSlideIn .35s ease}
+@keyframes fadeSlideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 <body>
@@ -299,15 +315,18 @@ body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellips
 
 // ===== TAB SWITCH =====
 function switchTab(tab){
- document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('active')});
+ var tp=document.getElementById('tab-prompts');
+ var tl=document.getElementById('tab-lobster');
+ var btns=document.querySelectorAll('.nav-tab');
+ btns.forEach(function(t){t.classList.remove('active')});
  if(tab==='prompts'){
-  document.querySelector('.nav-tab:first-child').classList.add('active');
-  document.getElementById('tab-prompts').style.display='block';
-  document.getElementById('tab-lobster').style.display='none';
+  btns[0].classList.add('active');
+  tl.style.display='none';tp.style.display='block';
+  setTimeout(function(){tp.style.animation='none';tp.offsetHeight;tp.style.animation='fadeSlideIn .35s ease';},10);
  } else {
-  document.querySelector('.nav-tab:last-child').classList.add('active');
-  document.getElementById('tab-prompts').style.display='none';
-  document.getElementById('tab-lobster').style.display='block';
+  btns[1].classList.add('active');
+  tp.style.display='none';tl.style.display='block';
+  setTimeout(function(){tl.style.animation='none';tl.offsetHeight;tl.style.animation='fadeSlideIn .35s ease';},10);
  }
 }
 
@@ -411,7 +430,7 @@ function render(){
   html+='<span class="tag" style="background:'+p.color+'">'+catLabel(p.cat)+'</span></div>';
   html+='<div class="prompt-body"><div class="desc">'+es(p.desc)+'</div>';
   html+='<div class="code-box"><pre>'+es(p.prompt)+'</pre></div>';
-  html+='<button class="btn" onclick="copyPrompt('+i+');event.stopPropagation()">📋 复制指令</button></div></div>';
+  html+='<button class="btn" onclick="rippleClick(event);copyPrompt('+i+')">📋 复制指令</button></div></div>';
  });}
  document.getElementById('prompts').innerHTML=html;
 }
@@ -435,6 +454,9 @@ document.getElementById('cats').addEventListener('click',function(e){
 });
 function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2500);}
 function copyText(txt,msg){navigator.clipboard.writeText(txt).then(function(){toast(msg)});}
+function rippleClick(e){var b=e.currentTarget;var r=document.createElement('span');var rect=b.getBoundingClientRect();var size=Math.max(rect.width,rect.height);r.className='ripple';r.style.left=(e.clientX-rect.left-size/2)+'px';r.style.top=(e.clientY-rect.top-size/2)+'px';r.style.width=r.style.height=size+'px';b.appendChild(r);setTimeout(function(){r.remove()},500);}
+// Particles
+(function(){var c=document.getElementById('particles');if(!c){c=document.createElement('div');c.id='particles';document.body.prepend(c)}var colors=['rgba(79,140,255,.3)','rgba(139,92,246,.2)','rgba(34,211,154,.15)','rgba(236,72,153,.12)'];for(var i=0;i<25;i++){var p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.setProperty('--dur',(8+Math.random()*14)+'s');p.style.animationDelay=Math.random()*12+'s';p.style.width=p.style.height=(2+Math.random()*3)+'px';p.style.background=colors[Math.floor(Math.random()*colors.length)];c.appendChild(p)}})();
 render();
 </script>
 </body>
