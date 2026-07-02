@@ -96,7 +96,34 @@ nav .tabs button:hover:not(.active){color:var(--text)}
 .modal .copy-btn:active{transform:scale(.98)}
 
 /* === LOBSTER TAB === */
-.lobster-tab{display:none}
+.lobster-tab,.checker-tab{display:none}
+
+/* Checker */
+.checker-input{width:100%;padding:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:14px;resize:vertical;min-height:100px;outline:none;font-family:var(--font);transition:border-color .25s;line-height:1.6;margin-bottom:20px}
+.checker-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(79,140,255,.1)}
+.checker-stats{display:flex;gap:8px;margin-bottom:20px}
+.checker-stats .c-stat{flex:1;padding:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);text-align:center}
+.checker-stats .c-stat .cs-num{font-size:22px;font-weight:800;letter-spacing:-.5px}
+.checker-stats .c-stat .cs-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+.v-group{margin-bottom:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
+.v-group .v-hd{padding:12px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;transition:background .2s}
+.v-group .v-hd:hover{background:var(--surface2)}
+.v-group .v-hd .v-badge{padding:3px 10px;border-radius:6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#fff;flex-shrink:0}
+.v-group .v-hd .v-title{font-size:13px;font-weight:600;flex:1}
+.v-group .v-hd .v-count{font-size:11px;color:var(--text3)}
+.v-group .v-body{padding:0 16px 14px;display:none}
+.v-group.open .v-body{display:block}
+.v-row{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px;border-bottom:1px solid rgba(255,255,255,.02)}
+.v-row:last-child{border:none}
+.v-row .v-word{padding:3px 10px;background:rgba(245,70,91,.08);border:1px solid rgba(245,70,91,.2);border-radius:6px;color:var(--red);font-weight:600;font-size:11px;flex-shrink:0}
+.v-row .v-word.warn{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.2);color:var(--orange)}
+.v-row .v-arrow{color:var(--text3);flex-shrink:0}
+.v-row .v-fix{color:var(--green);font-size:11px}
+.checker-empty{text-align:center;padding:40px;color:var(--text3);font-size:14px}
+.checker-cat-filter{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.checker-cat-filter button{padding:6px 14px;border-radius:100px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:11px;cursor:pointer;transition:all .2s;font-family:var(--font)}
+.checker-cat-filter button:hover{background:var(--surface2);color:var(--text)}
+.checker-cat-filter button.on{background:rgba(79,140,255,.12);color:var(--blue);border-color:rgba(79,140,255,.25)}
 .lobster-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-bottom:40px}
 .l-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:all .25s}
 .l-card:hover{border-color:rgba(139,92,246,.2)}
@@ -157,6 +184,7 @@ nav .tabs button:hover:not(.active){color:var(--text)}
   <div class="tabs">
    <button class="active" onclick="switchTab('prompts')">指令库</button>
    <button onclick="switchTab('lobster')">为什么选龙虾</button>
+   <button onclick="switchTab('checker')">1688检测</button>
   </div>
  </nav>
 
@@ -235,6 +263,32 @@ nav .tabs button:hover:not(.active){color:var(--text)}
   </div>
  </div>
 
+ <!-- TAB 3: 1688标题检测 -->
+ <div class="checker-tab" id="tab-checker">
+  <div class="hero">
+   <div class="badge"><span class="dot"></span> 全类目 · 广告法合规 · 140+违禁词</div>
+   <h1>你的标题<br>能过<span class="glow">广告法</span>吗？</h1>
+   <p class="sub">粘贴商品标题，秒级检测。极限词、医疗功效、虚假承诺——逐词标记，给出修改建议。</p>
+  </div>
+  <div class="checker-cat-filter" id="checkerCats">
+   <button class="on" data-ccat="all">全类目</button>
+   <button data-ccat="medical">膏贴/器械</button>
+   <button data-ccat="food">食品/保健品</button>
+   <button data-ccat="cosmetic">化妆品</button>
+   <button data-ccat="cloth">服装/鞋包</button>
+   <button data-ccat="digital">数码/电子</button>
+   <button data-ccat="home">家居/日用</button>
+  </div>
+  <textarea class="checker-input" id="checkerInput" placeholder="粘贴商品标题，如：2025夏季新款男式纯棉短袖T恤 全网最好 百搭透气 限时特惠..." oninput="runCheck()"></textarea>
+  <div class="checker-stats">
+   <div class="c-stat"><div class="cs-num" style="color:var(--blue)" id="cs-total">0</div><div class="cs-lbl">总字数</div></div>
+   <div class="c-stat"><div class="cs-num" style="color:var(--green)" id="cs-safe">0</div><div class="cs-lbl">安全通过</div></div>
+   <div class="c-stat"><div class="cs-num" style="color:var(--orange)" id="cs-warn">0</div><div class="cs-lbl">建议修改</div></div>
+   <div class="c-stat"><div class="cs-num" style="color:var(--red)" id="cs-danger">0</div><div class="cs-lbl">⚠ 严重违规</div></div>
+  </div>
+  <div id="checkerResults"></div>
+ </div>
+
  <!-- Footer -->
  <div class="footer-cta">
   <h3>🦞 让龙虾帮你部署</h3>
@@ -273,10 +327,11 @@ document.addEventListener('mousemove',function(e){document.querySelectorAll('.ca
 
 // ===== TAB SWITCH =====
 function switchTab(tab){
- var btns=document.querySelectorAll('.tabs button'),tp=document.getElementById('tab-prompts'),tl=document.getElementById('tab-lobster');
- btns.forEach(function(b){b.classList.remove('active')});
- if(tab==='prompts'){btns[0].classList.add('active');tp.style.display='block';tl.style.display='none'}
- else{btns[1].classList.add('active');tp.style.display='none';tl.style.display='block'}
+ var btns=document.querySelectorAll('.tabs button'),tp=document.getElementById('tab-prompts'),tl=document.getElementById('tab-lobster'),tc=document.getElementById('tab-checker');
+ btns.forEach(function(b){b.classList.remove('active')});tp.style.display='none';tl.style.display='none';tc.style.display='none';
+ if(tab==='prompts'){btns[0].classList.add('active');tp.style.display='block'}
+ else if(tab==='lobster'){btns[1].classList.add('active');tl.style.display='block'}
+ else{btns[2].classList.add('active');tc.style.display='block'}
 }
 
 // ===== DATA =====
@@ -313,6 +368,17 @@ document.getElementById('cats').addEventListener('click',function(e){if(!e.targe
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();document.getElementById('search').focus()}});
 function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2200)}
 function copyText(txt,msg){navigator.clipboard.writeText(txt).then(function(){toast(msg)})}
+
+// ===== 1688 TITLE CHECKER =====
+var FW_ALL=[{w:'最',c:'极限词',g:'all',s:'high',t:'改为"很""更"'},{w:'最佳',c:'极限词',g:'all',s:'high',t:'删除'},{w:'最好',c:'极限词',g:'all',s:'mid',t:'改为"优选"'},{w:'最低',c:'极限词',g:'all',s:'high',t:'改为"实惠"'},{w:'最高',c:'极限词',g:'all',s:'high',t:'删除'},{w:'顶级',c:'极限词',g:'all',s:'high',t:'改为"高端"'},{w:'极品',c:'极限词',g:'all',s:'high',t:'删除'},{w:'极致',c:'极限词',g:'all',s:'high',t:'删除'},{w:'第一',c:'极限词',g:'all',s:'high',t:'不要自称第一'},{w:'首个',c:'极限词',g:'all',s:'high',t:'删除'},{w:'首选',c:'极限词',g:'all',s:'mid',t:'改为"推荐"'},{w:'唯一',c:'极限词',g:'all',s:'high',t:'删除'},{w:'独家',c:'极限词',g:'all',s:'mid',t:'改为"专供"'},{w:'绝对',c:'极限词',g:'all',s:'high',t:'删除'},{w:'万能',c:'极限词',g:'all',s:'high',t:'删除'},{w:'100%',c:'极限词',g:'all',s:'high',t:'删除'},{w:'全网',c:'极限词',g:'all',s:'high',t:'删除'},{w:'国家级',c:'极限词',g:'all',s:'high',t:'删除'},{w:'冠军',c:'极限词',g:'all',s:'high',t:'删除'},{w:'王牌',c:'极限词',g:'all',s:'high',t:'删除'},{w:'永久',c:'极限词',g:'all',s:'high',t:'删除'},{w:'第一品牌',c:'极限词',g:'all',s:'high',t:'删除'},{w:'销量冠军',c:'极限词',g:'all',s:'high',t:'删除'},{w:'独一无二',c:'极限词',g:'all',s:'high',t:'删除'},{w:'最新',c:'极限词',g:'all',s:'mid',t:'删除'},{w:'加微信',c:'诱导联系',g:'all',s:'high',t:'平台禁止留联系方式'},{w:'扫码',c:'诱导联系',g:'all',s:'high',t:'删除'},{w:'好评返现',c:'诱导联系',g:'all',s:'high',t:'严禁！删除'},{w:'仿',c:'品牌侵权',g:'all',s:'high',t:'删除，不要暗示仿品'},{w:'高仿',c:'品牌侵权',g:'all',s:'high',t:'删除'},{w:'A货',c:'品牌侵权',g:'all',s:'high',t:'删除'},{w:'原单',c:'品牌侵权',g:'all',s:'high',t:'删除'},{w:'复刻',c:'品牌侵权',g:'all',s:'high',t:'删除'},{w:'治疗',c:'医疗功效',g:'medical',s:'high',t:'删除，膏贴不是药'},{w:'治愈',c:'医疗功效',g:'medical',s:'high',t:'删除'},{w:'根治',c:'医疗功效',g:'medical',s:'high',t:'改为"缓解"'},{w:'消炎',c:'医疗功效',g:'medical',s:'high',t:'删除，不能宣称消炎'},{w:'抗菌',c:'医疗功效',g:'medical',s:'high',t:'删除'},{w:'杀菌',c:'医疗功效',g:'medical',s:'high',t:'删除'},{w:'修复',c:'医疗功效',g:'medical_cosmetic',s:'high',t:'改为"养护"'},{w:'再生',c:'医疗功效',g:'medical_cosmetic',s:'high',t:'删除'},{w:'关节炎',c:'疾病名称',g:'medical',s:'high',t:'删除，不能提具体病名'},{w:'颈椎病',c:'疾病名称',g:'medical',s:'high',t:'删除'},{w:'腰椎',c:'疾病名称',g:'medical',s:'high',t:'删除'},{w:'风湿',c:'疾病名称',g:'medical',s:'high',t:'删除'},{w:'骨质增生',c:'疾病名称',g:'medical',s:'high',t:'删除'},{w:'肩周炎',c:'疾病名称',g:'medical',s:'high',t:'删除'},{w:'痛风',c:'疾病名称',g:'medical',s:'high',t:'删除'},{w:'静脉曲张',c:'疾病名称',g:'medical',s:'high',t:'删除'},{w:'椎间盘',c:'疾病名称',g:'medical',s:'high',t:'删除'},{w:'活血',c:'医疗用语',g:'medical',s:'high',t:'改为"温通"'},{w:'化瘀',c:'医疗用语',g:'medical',s:'high',t:'删除'},{w:'祛风',c:'医疗用语',g:'medical',s:'high',t:'删除'},{w:'除湿',c:'医疗用语',g:'medical',s:'mid',t:'改为"排湿"'},{w:'止痛',c:'医疗用语',g:'medical',s:'high',t:'改为"舒缓"'},{w:'消肿',c:'医疗用语',g:'medical',s:'high',t:'删除'},{w:'包治百病',c:'功效断言',g:'medical_food',s:'high',t:'删除'},{w:'一贴见效',c:'功效断言',g:'medical',s:'high',t:'删除'},{w:'立竿见影',c:'功效断言',g:'medical_cosmetic',s:'high',t:'删除'},{w:'特效',c:'功效断言',g:'all',s:'high',t:'改为"体验装"'},{w:'奇效',c:'功效断言',g:'all',s:'high',t:'删除'},{w:'见效快',c:'功效断言',g:'all',s:'high',t:'删除'},{w:'安全无毒',c:'安全断言',g:'all',s:'high',t:'删除，不能断言安全性'},{w:'无副作用',c:'安全断言',g:'medical_food_cosmetic',s:'high',t:'删除'},{w:'纯天然',c:'安全断言',g:'all',s:'mid',t:'改为"草本""植萃"'},{w:'孕妇可用',c:'安全断言',g:'medical_cosmetic',s:'high',t:'删除，需遵医嘱'},{w:'疼痛',c:'症状暗示',g:'medical',s:'mid',t:'可以不说"痛"，说"运动后"'},{w:'酸痛',c:'症状暗示',g:'medical',s:'mid',t:'删除'},{w:'麻木',c:'症状暗示',g:'medical',s:'mid',t:'删除'},{w:'僵硬',c:'症状暗示',g:'medical',s:'mid',t:'改为"紧绷"'},{w:'不舒服',c:'症状暗示',g:'all',s:'mid',t:'改为"疲劳"'},{w:'减肥',c:'食品功效',g:'food',s:'high',t:'不能宣称减肥'},{w:'排毒',c:'食品功效',g:'food_cosmetic',s:'high',t:'删除'},{w:'防癌',c:'食品功效',g:'food',s:'high',t:'删除'},{w:'降血压',c:'食品功效',g:'food',s:'high',t:'删除'},{w:'美白',c:'化妆品功效',g:'cosmetic',s:'high',t:'非特证不能宣称'},{w:'祛斑',c:'化妆品功效',g:'cosmetic',s:'high',t:'非特证不能宣称'},{w:'防晒',c:'化妆品功效',g:'cosmetic',s:'high',t:'非特证不能宣称'},{w:'祛痘',c:'化妆品功效',g:'cosmetic',s:'high',t:'改为"控油"'},{w:'抗皱',c:'化妆品功效',g:'cosmetic',s:'high',t:'改为"保湿紧致"'},{w:'真丝',c:'材质夸大',g:'cloth',s:'high',t:'非真丝材质不能标注'},{w:'羊绒',c:'材质夸大',g:'cloth',s:'high',t:'非羊绒不能标注'},{w:'行货',c:'产品宣称',g:'digital',s:'mid',t:'需有正规渠道证明'},{w:'零甲醛',c:'环保宣称',g:'home',s:'high',t:'需检测报告支持'}];
+var checkerCat='all';
+
+function matchCat(wordCat,targetCat){if(targetCat==='all')return true;return wordCat.split('_').indexOf('all')!==-1||wordCat.split('_').indexOf(targetCat)!==-1}
+function runCheck(){var text=document.getElementById('checkerInput').value.trim();var words=FW_ALL.filter(function(w){return matchCat(w.g,checkerCat)});var found=[];var seen={};words.forEach(function(w){if(text.indexOf(w.w)!==-1&&!seen[w.w]){seen[w.w]=true;found.push(w)}});var bad=found.filter(function(w){return w.s==='high'});var mid=found.filter(function(w){return w.s==='mid'});document.getElementById('cs-total').textContent=text.length;document.getElementById('cs-danger').textContent=bad.length;document.getElementById('cs-warn').textContent=mid.length;document.getElementById('cs-safe').textContent=found.length?text.length-bad.length-mid.length:text.length;var res=document.getElementById('checkerResults');if(!found.length){res.innerHTML='<div class="checker-empty">✅ 未检测到违禁词，标题安全</div>';return}var groups={};found.forEach(function(w){if(!groups[w.c])groups[w.c]=[];groups[w.c].push(w)});var html='';Object.keys(groups).forEach(function(cat){var items=groups[cat];html+='<div class="v-group open"><div class="v-hd" onclick="this.parentElement.classList.toggle(\'open\')"><span class="v-badge" style="background:var(--red)">'+cat+'</span><span class="v-title">'+items.length+'处违规</span><span class="v-count">▼</span></div><div class="v-body">';items.forEach(function(w){html+='<div class="v-row"><span class="v-word'+(w.s==='mid'?' warn':'')+'">'+(w.s==='high'?'🚫 ':'⚡ ')+es2(w.w)+'</span><span class="v-arrow">→</span><span class="v-fix">'+es2(w.t)+'</span></div>'});html+='</div></div>'});res.innerHTML=html})
+}
+function es2(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+document.getElementById('checkerCats').addEventListener('click',function(e){if(!e.target.dataset.ccat)return;document.querySelectorAll('#checkerCats button').forEach(function(b){b.classList.remove('on')});e.target.classList.add('on');checkerCat=e.target.dataset.ccat;runCheck()});
+
 render();
 </script>
 </body>
